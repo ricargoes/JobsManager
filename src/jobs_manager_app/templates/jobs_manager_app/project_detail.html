@@ -1,0 +1,38 @@
+{% extends "jobs_manager_app/base.html" %}
+
+{% block back_link %}
+	<a href="{% url 'jobs_manager_app:project_index' %}" >Back</a>
+{% endblock back_link %} 
+
+{% block content %}
+<div class="row"
+	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
+	<div class="col-md-3">name</div>
+	<div class="col-md-3">customer</div>
+	<div class="col-md-2">website</div>
+	<div class="col-md-2"># assignments</div>
+	<div class="col-md-2">created</div>
+</div>
+<div class="row">
+	<div class="col-md-3">{{ project.name }}</div>
+	<div class="col-md-3">{{ project.customer }}</div>
+	<div class="col-md-2">{{ project.website }}</div>
+	<div class="col-md-2">{{ project.assignment_set.count }}</div>
+	<div class="col-md-2">{{ project.created }}</div>
+</div>
+<div class="row">
+	<br> {% for x in project.assignment_set.all %}
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+			<a href="{% url 'jobs_manager_app:assignment_detail' x.id %}" >
+			{{x.name}}
+			</a>
+			</h3>
+		</div>
+		<div class="panel-body">{{x.requirements|linebreaksbr}}</div>
+	</div>
+	{% endfor %}
+</div>
+
+{% endblock content %}

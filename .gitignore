@@ -39,3 +39,7 @@ nosetests.xml
 *~
 *.swp
 *.swo
+
+
+# Project specific ignores
+src/jobs_manager_app/static/jobs_manager_app/fonts

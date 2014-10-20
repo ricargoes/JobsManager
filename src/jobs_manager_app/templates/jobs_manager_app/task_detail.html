@@ -1,0 +1,36 @@
+{% extends "jobs_manager_app/base.html" %}
+
+{% block back_link %}
+	<a href="{% url 'jobs_manager_app:task_index' %}" >Back</a>
+{% endblock back_link %} 
+
+{% block content %}
+<div class="row"
+	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
+	<div class="col-md-2">Name</div>
+	<div class="col-md-2">Project</div>
+	<div class="col-md-2">State</div>
+	<div class="col-md-2">Price</div>
+	<div class="col-md-2">ETA</div>
+	<div class="col-md-2">Created</div>
+</div>
+<div class="row">
+	<div class="col-md-2">{{ task.name }}</div>
+	<div class="col-md-2">{{ task.project.name }}</div>
+	<div class="col-md-2">{{ task.int_state }}</div>
+	<div class="col-md-2">{{ task.price }}</div>
+	<div class="col-md-2">{{ task.eta }}</div>
+	<div class="col-md-2">{{ task.created }}</div>
+</div>
+<div class="row">
+	<br> {% for x in task.task_set.all %}
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">{{x.name}}</h3>
+		</div>
+		<div class="panel-body">{{x.description|linebreaksbr}}</div>
+	</div>
+	{% endfor %}
+</div>
+
+{% endblock content %}

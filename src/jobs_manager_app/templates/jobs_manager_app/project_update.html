@@ -1,0 +1,20 @@
+{% extends "jobs_manager_app/base.html" %} 
+
+{% block back_link %}
+	<a href="{% url 'jobs_manager_app:project_index' %}" >Back</a>
+{% endblock back_link %}
+
+
+
+{% block content %}
+<form action="{% url 'jobs_manager_app:project_update' 2 %}" method="post">
+{% csrf_token %}
+    {% for field in form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}  {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Send message" /></p>
+</form>
+{% endblock content %}

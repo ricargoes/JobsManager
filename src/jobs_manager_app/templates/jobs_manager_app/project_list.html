@@ -1,0 +1,31 @@
+{% extends "jobs_manager_app/base.html" %} {% block content %}
+
+<div class="row"
+	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
+	<div class="col-md-2">name</div>
+	<div class="col-md-2">customer</div>
+	<div class="col-md-2">website</div>
+	<div class="col-md-2"># assignments</div>
+	<div class="col-md-2">action</div>
+	<div class="col-md-2">created</div>
+</div>
+{% for project in project_list %}
+<div class="row">
+	<div class="col-md-2">
+		<a href="{% url 'jobs_manager_app:project_detail' project.id %}"> {{ project.name }}</a>
+	</div>
+	<div class="col-md-2">{{ project.customer }}</div>
+	<div class="col-md-2">{{ project.website }}</div>
+	<div class="col-md-2">{{ project.assignment_set.count }}</div>
+	<div class="col-md-2">
+		<a href="{% url 'jobs_manager_app:project_update' project.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
+		<a href="{% url 'jobs_manager_app:project_delete' project.id %}"> <span class="glyphicon glyphicon-remove delete"></span></a>
+	</div>
+	<div class="col-md-2">{{ project.created }}</div>
+</div>
+{% endfor %}
+<hr>
+
+<a href="{% url 'jobs_manager_app:project_update' %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a>
+
+{% endblock content %}
