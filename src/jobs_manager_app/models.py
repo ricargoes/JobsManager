@@ -21,7 +21,16 @@ class Assignment(models.Model):
     project = models.ForeignKey(Project)
     name = models.CharField(max_length=200)
     requirements = models.TextField()
-    int_state = models.IntegerField(default=0)
+    STATE = (
+        (0, 'Pending estimate'),
+        (1, 'Estimate proposed'),
+        (2, 'Estimate rejected'),
+        (3, 'Assignment accepted'),
+        (4, 'Assignment completed'),
+        (5, 'Assignment paid'),
+        (6, 'Assignment closed')
+        )
+    int_state = models.IntegerField(default=0, choices=STATE)
     deal_comment = models.TextField(blank=True)
     price = models.FloatField(blank=True, null=True)
     eta = models.DateField(blank=True, null=True)
