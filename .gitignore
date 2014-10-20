@@ -34,3 +34,8 @@ nosetests.xml
 .project
 .pydevproject
 .settings
+
+# Temporary files
+*~
+*.swp
+*.swo
