@@ -27,6 +27,7 @@ def update(request, project_id=None):
             return HttpResponseForbidden()  # Raises a 403 error
     else:
         project = Project()
+        context['project_id'] = None
 
     # We save the data coming from the POST petition.
     if request.method == 'POST':
@@ -37,8 +38,7 @@ def update(request, project_id=None):
             p.save()
             messages.success(request, 'The project has been updated')
             return HttpResponseRedirect(
-                reverse('jobs_manager_app:project_detail',
-                        kwargs={'project_id': p.id})
+                reverse('jobs_manager_app:project_index')
                 )
     else:
         form = ProjectForm(instance=project)

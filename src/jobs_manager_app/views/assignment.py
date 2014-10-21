@@ -28,6 +28,7 @@ def update(request, assignment_id=None):
             return HttpResponseForbidden()  # Raises a 403 error
     else:
         assignment = Assignment()
+        context['assignment_id'] = None
 
     if request.method == 'POST':
         form = AssignmentForm(request.POST, instance=assignment)

@@ -30,7 +30,7 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:project_delete' project.id %}" method="post">{% csrf_token %}
 				    <p style="text-align: center">Are you sure you want to delete the "{{ project.name }} project"?</p>
-				    <input class="btn btn-md btn-danger" style="float: right" type="submit" value="Delete" />
+				    <button class="btn btn-md btn-danger" style="float: right" type="submit">Delete</button>
 				</form>
 			</div>
 		</div>
