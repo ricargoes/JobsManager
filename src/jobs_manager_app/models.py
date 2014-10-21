@@ -50,7 +50,7 @@ class Task(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     priority = models.IntegerField(default=1)
-    bool_completed = models.BooleanField(blank=True)
+    bool_completed = models.BooleanField(default=False, blank=True)
     created = models.DateField(auto_now_add=True)
     modified = models.DateField(auto_now=True)
 

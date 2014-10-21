@@ -7,7 +7,7 @@ urlpatterns = patterns(
     url(r'^project/$',
         'jobs_manager_app.views.project.index', name='project_index'),
     url(r'^project/(?P<pk>\d+)/$',
-        views.project.DetailView.as_view(), name='project_detail'),
+        views.project.detail, name='project_detail'),
     url(r'^project/(?P<project_id>\d+)/update/$',
         'jobs_manager_app.views.project.update', name='project_update'),
     url(r'^project/update/$',

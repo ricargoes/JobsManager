@@ -7,7 +7,7 @@
 
 
 {% block content %}
-<form action="{% url 'jobs_manager_app:project_update' 2 %}" method="post">
+<form action="{% url 'jobs_manager_app:project_update' project_id %}" method="post">
 {% csrf_token %}
     {% for field in form %}
         <div class="fieldWrapper">
