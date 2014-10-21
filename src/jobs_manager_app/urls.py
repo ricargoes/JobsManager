@@ -11,7 +11,7 @@ urlpatterns = patterns(
     url(r'^project/(?P<project_id>\d+)/update/$',
         views.project.update, name='project_update'),
     url(r'^project/update/$',
-        views.project.update, name='project_update'),
+        views.project.update, name='project_create'),
     url(r'^project/(?P<project_id>\d+)/delete/$',
         views.project.delete, name='project_delete'),
 
@@ -19,10 +19,10 @@ urlpatterns = patterns(
         views.assignment.index, name='assignment_index'),
     url(r'^assignment/(?P<assignment_id>\d+)/$',
         views.assignment.detail, name='assignment_detail'),
-    url(r'^assignments/(?P<project_id>\d+)/update/$',
+    url(r'^assignments/(?P<assignment_id>\d+)/update/$',
         views.assignment.update, name='assignment_update'),
-    url(r'^assignment/update/$',
-        views.assignment.update, name='assignment_update'),
+    url(r'^assignment/(?P<project_id>\d+)/update/$',
+        views.assignment.update, name='assignment_create'),
     url(r'^assignment/(?P<pk>\d+)/delete/$',
         views.assignment.DeleteView.as_view(), name='assignment_delete'),
 

@@ -1,17 +1,17 @@
 {% extends "jobs_manager_app/base.html" %} 
 
 {% block back_link %}
-	<a href="{% url 'jobs_manager_app:project_index' %}" >Back</a>
+	<a href="{% url 'jobs_manager_app:assignment_index' %}" >Back</a>
 {% endblock back_link %}
 
 
 
 {% block content %}
 
-{% if project_id %}
-<form action="{% url 'jobs_manager_app:project_update' project_id %}" method="post">
+{% if assignment_id %}
+<form action="{% url 'jobs_manager_app:assignment_update' assignment_id %}" method="post">
 {% else %}
-<form action="{% url 'jobs_manager_app:project_create' %}" method="post">
+<form action="{% url 'jobs_manager_app:assignment_create' project_id %}" method="post">
 {% endif %}
 {% csrf_token %}
     {% for field in form %}

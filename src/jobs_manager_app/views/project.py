@@ -22,12 +22,10 @@ def update(request, project_id=None):
     # We load the instance we are going to change.
     if project_id:
         project = get_object_or_404(Project, pk=project_id)
-        context['project_id'] = project_id
         if project.customer != request.user:
             return HttpResponseForbidden()  # Raises a 403 error
     else:
         project = Project()
-        context['project_id'] = None
 
     # We save the data coming from the POST petition.
     if request.method == 'POST':
@@ -45,6 +43,7 @@ def update(request, project_id=None):
 
     # We prepare the form we are going to draw in the template and we render.
     context['form'] = form
+    context['project_id'] = project_id
     return render(request, 'jobs_manager_app/project_update.html', context)
 
 

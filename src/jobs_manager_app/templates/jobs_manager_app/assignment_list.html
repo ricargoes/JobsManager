@@ -2,22 +2,22 @@
 
 <div class="row"
 	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-2">name</div>
-	<div class="col-md-2">Project</div>
+	<div class="col-md-3">name</div>
+	<div class="col-md-3">Project</div>
 	<div class="col-md-2">State</div>
-	<div class="col-md-2"># task</div>
-	<div class="col-md-2">action</div>
+	<div class="col-md-1"># task</div>
+	<div class="col-md-1">action</div>
 	<div class="col-md-2">created</div>
 </div>
 {% for assignment in assignment_list %}
 <div class="row">
-	<div class="col-md-2">
+	<div class="col-md-3">
 		<a href="{% url 'jobs_manager_app:assignment_detail' assignment.id %}"> {{ assignment.name }}</a>
 	</div>
-	<div class="col-md-2">{{ assignment.project.name }}</div>
+	<div class="col-md-3">{{ assignment.project.name }}</div>
 	<div class="col-md-2">{{ assignment.int_state }}</div>
-	<div class="col-md-2">{{ assignment.task_set.count }}</div>
-	<div class="col-md-2">
+	<div class="col-md-1">{{ assignment.task_set.count }}</div>
+	<div class="col-md-1">
 		<a href="{% url 'jobs_manager_app:assignment_update' assignment.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
 		<a href="{% url 'jobs_manager_app:assignment_delete' assignment.id %}"> <span class="glyphicon glyphicon-remove delete"></span></a>
 	</div>
@@ -26,6 +26,5 @@
 {% endfor %}
 <hr>
 
-<a href="{% url 'jobs_manager_app:assignment_update' %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a>
 
 {% endblock content %}

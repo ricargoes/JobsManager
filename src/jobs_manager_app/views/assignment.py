@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
-from jobs_manager_app.models import Assignment
+from jobs_manager_app.models import Project, Assignment
 from jobs_manager_app.forms import AssignmentForm
 from django.contrib.auth.decorators import login_required
 
@@ -19,26 +19,32 @@ def index(request):
 
 
 @login_required
-def update(request, assignment_id=None):
+def update(request, project_id=None, assignment_id=None):
     # We load the instance we are going to change.
     if assignment_id:
         assignment = get_object_or_404(Assignment, pk=assignment_id)
-        context['assignment_id'] = assignment_id
-        if assignment.project.customer != request.user:
+        if (assignment.project.customer != request.user
+                or assignment.int_state > 0):
             return HttpResponseForbidden()  # Raises a 403 error
-    else:
-        assignment = Assignment()
+    elif project_id:
+        p = get_object_or_404(Project, pk=project_id)
+        assignment = Assignment(project=p)
         context['assignment_id'] = None
 
     if request.method == 'POST':
         form = AssignmentForm(request.POST, instance=assignment)
-        a = form.save()
+        a = form.save(commit=False)
+        a.save()
         messages.success(request, 'The assignment has been updated')
         return HttpResponseRedirect(
-            reverse('jobs_manager_app:assignment_detail', kwargs={'pk': a.id})
+            reverse('jobs_manager_app:assignment_index')
             )
+    else:
+        form = AssignmentForm(instance=assignment)
 
     context['form'] = form
+    context['project_id'] = project_id
+    context['assignment_id'] = assignment_id
     return render(request, 'jobs_manager_app/assignment_update.html', context)
 
 
