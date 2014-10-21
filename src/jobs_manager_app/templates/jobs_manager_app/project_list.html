@@ -1,43 +1,43 @@
 {% extends "jobs_manager_app/base.html" %} {% block content %}
 
-<div class="row"
-	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-3">name</div>
-	<div class="col-md-2">customer</div>
-	<div class="col-md-2">website</div>
-	<div class="col-md-2"># assignments</div>
-	<div class="col-md-1">action</div>
-	<div class="col-md-2">created</div>
-</div>
-{% for project in project_list %}
-<div class="row">
-	<div class="col-md-3">
-		<a href="{% url 'jobs_manager_app:project_detail' project.id %}"> {{ project.name }}</a>
-	</div>
-	<div class="col-md-2">{{ project.customer }}</div>
-	<div class="col-md-2">{{ project.website }}</div>
-	<div class="col-md-2">{{ project.assignment_set.count }}</div>
-	<div class="col-md-1">
-		<a href="{% url 'jobs_manager_app:project_update' project.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
+<table class="table table-hover table-condensed">
+	<tr>
+		<th>Name</th>
+		<th>Customer</th>
+		<th>Website</th>
+		<th># assignments</th>
+		<th>Action</th>
+		<th>Created</th>
+	</tr>
+	{% for project in project_list %}
+	<tr>
+		<td>
+			<a href="{% url 'jobs_manager_app:project_detail' project.id %}"> {{ project.name }}</a>
+		</td>
+		<td>{{ project.customer }}</td>
+		<td>{{ project.website }}</td>
+		<td>{{ project.assignment_set.count }}</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:project_update' project.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
 		<a href=# data-toggle="modal" data-target="#delete-{{ project.id }}"> <span class="glyphicon glyphicon-remove delete"></span></a>
-	</div>
-	<div class="col-md-2">{{ project.created }}</div>
-</div>
+		</td>
+		<td>{{ project.created }}</td>
+	</tr>
 
-<div class="modal fade" id="delete-{{ project.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-body">
-				<form action="{% url 'jobs_manager_app:project_delete' project.id %}" method="post">{% csrf_token %}
-				    <p style="text-align: center">Are you sure you want to delete the "{{ project.name }} project"?</p>
-				    <button class="btn btn-md btn-danger" style="float: right" type="submit">Delete</button>
-				</form>
+	<div class="modal fade" id="delete-{{ project.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form action="{% url 'jobs_manager_app:project_delete' project.id %}" method="post">{% csrf_token %}
+					    <p style="text-align: center">Are you sure you want to delete the "{{ project.name }} project"?</p>
+					    <button class="btn btn-md btn-danger" style="float: right" type="submit">Delete</button>
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-{% endfor %}
-<hr>
+	{% endfor %}
+</table>
 
 <a href="{% url 'jobs_manager_app:project_create' %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a>
 

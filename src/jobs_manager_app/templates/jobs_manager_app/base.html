@@ -42,23 +42,21 @@
 	<script>
 		$( "li.{{ tag }}-nav" ).toggleClass( "active" );
 	</script>
-	
-	<hr>
 	{% endblock %}
 	
 	<div class="container theme-showcase" role="main">
 	
-	{% if messages %}
-    	{% for message in messages %}
-    		<div {% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %}>
-    			<button type="button" class="close" data-dismiss="alert">
-    				<span aria-hidden="true">&times;</span>
-    				<span class="sr-only">Close</span>
-    			</button>
-  				{{ message }}
-  			</div>
-   		{% endfor %}
-	{% endif %}
+		{% if messages %}
+	    	{% for message in messages %}
+	    		<div {% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %}>
+	    			<button type="button" class="close" data-dismiss="alert">
+	    				<span aria-hidden="true">&times;</span>
+	    				<span class="sr-only">Close</span>
+	    			</button>
+	  				{{ message }}
+	  			</div>
+	   		{% endfor %}
+		{% endif %}
 
 		{% block back_link %} {% endblock %}
 

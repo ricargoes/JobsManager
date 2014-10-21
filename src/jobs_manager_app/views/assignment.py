@@ -1,4 +1,3 @@
-from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -6,6 +5,7 @@ from django.contrib import messages
 from jobs_manager_app.models import Project, Assignment
 from jobs_manager_app.forms import AssignmentForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 context = {}
 context['tag'] = 'assignment'
@@ -13,7 +13,9 @@ context['tag'] = 'assignment'
 
 @login_required
 def index(request):
-    assignment_list = Assignment.objects.filter(dev=request.user)
+    assignment_list = Assignment.objects.filter(
+        Q(dev=request.user) | Q(project__customer=request.user)
+    )
     context['assignment_list'] = assignment_list
     return render(request, 'jobs_manager_app/assignment_list.html', context)
 
@@ -55,6 +57,18 @@ def detail(request, assignment_id=None):
     return render(request, 'jobs_manager_app/assignment_detail.html', context)
 
 
-class DeleteView(generic.edit.DeleteView):
-    model = Assignment
-    success_url = reverse_lazy('jobs_manager_app:assignment_list')
+def delete(request, assignment_id):
+    if request.method == 'POST':
+        assignment = get_object_or_404(Assignment, pk=assignment_id)
+        if assignment.project.customer != request.user:
+            return HttpResponseForbidden()  # Raises a 403 error
+        assignment.delete()
+        messages.success(request, 'Assignment deleted')
+        return HttpResponseRedirect(
+            reverse_lazy('jobs_manager_app:assignment_index')
+            )
+    else:
+        messages.error(request, 'POST method expected')
+        return HttpResponseRedirect(
+            reverse_lazy('jobs_manager_app:assignment_index')
+            )

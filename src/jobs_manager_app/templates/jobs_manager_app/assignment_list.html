@@ -1,30 +1,48 @@
 {% extends "jobs_manager_app/base.html" %} {% block content %}
 
-<div class="row"
-	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-3">name</div>
-	<div class="col-md-3">Project</div>
-	<div class="col-md-2">State</div>
-	<div class="col-md-1"># task</div>
-	<div class="col-md-1">action</div>
-	<div class="col-md-2">created</div>
-</div>
-{% for assignment in assignment_list %}
-<div class="row">
-	<div class="col-md-3">
-		<a href="{% url 'jobs_manager_app:assignment_detail' assignment.id %}"> {{ assignment.name }}</a>
-	</div>
-	<div class="col-md-3">{{ assignment.project.name }}</div>
-	<div class="col-md-2">{{ assignment.int_state }}</div>
-	<div class="col-md-1">{{ assignment.task_set.count }}</div>
-	<div class="col-md-1">
-		<a href="{% url 'jobs_manager_app:assignment_update' assignment.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
-		<a href="{% url 'jobs_manager_app:assignment_delete' assignment.id %}"> <span class="glyphicon glyphicon-remove delete"></span></a>
-	</div>
-	<div class="col-md-2">{{ assignment.created }}</div>
-</div>
-{% endfor %}
-<hr>
 
+<table class="table table-hover table-condensed">
+	<tr>
+		<th>Name</th>
+		<th>Project</th>
+		<th>Dev</th>
+		<th>State</th>
+		<th># task</th>
+		<th>Action</th>
+		<th>Created</th>
+	</tr>
+	{% for assignment in assignment_list %}
+	<tr>
+		<td>
+			<a href="{% url 'jobs_manager_app:assignment_detail' assignment.id %}"> {{ assignment.name }}</a>
+		</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:project_detail' assignment.project.id %}">{{ assignment.project.name }}</a>
+		</td>
+		<td>{{ assignment.dev }}</td>
+		<td>{{ assignment.int_state }}</td>
+		<td>{{ assignment.task_set.count }}</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:assignment_update' assignment.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
+			<a href=# data-toggle="modal" data-target="#delete-{{ assignment.id }}"> <span class="glyphicon glyphicon-remove delete"></span></a>
+		</td>
+		<td>{{ assignment.created }}</td>
+	</tr>
+	
+	<div class="modal fade" id="delete-{{ assignment.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form action="{% url 'jobs_manager_app:assignment_delete' assignment.id %}" method="post" role="form">
+						{% csrf_token %}
+					    <p style="text-align: center">Are you sure you want to delete the "{{ assignment.name }} assignment"?</p>
+					    <button class="btn btn-md btn-danger" style="float: right" type="submit">Delete</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</table>
 
 {% endblock content %}
