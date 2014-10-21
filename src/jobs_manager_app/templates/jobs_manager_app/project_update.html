@@ -7,7 +7,11 @@
 
 
 {% block content %}
+{% if project_id %}
 <form action="{% url 'jobs_manager_app:project_update' project_id %}" method="post">
+{% else %}
+<form action="{% url 'jobs_manager_app:project_update' %}" method="post">
+{% endif %}
 {% csrf_token %}
     {% for field in form %}
         <div class="fieldWrapper">

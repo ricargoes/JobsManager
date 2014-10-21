@@ -1,7 +1,7 @@
 from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from jobs_manager_app.models import Assignment
 from jobs_manager_app.forms import AssignmentForm
@@ -20,35 +20,32 @@ def index(request):
 
 @login_required
 def update(request, assignment_id=None):
-    if assignment_id is None:
-        form = AssignmentForm()
+    # We load the instance we are going to change.
+    if assignment_id:
+        assignment = get_object_or_404(Assignment, pk=assignment_id)
+        context['assignment_id'] = assignment_id
+        if assignment.project.customer != request.user:
+            return HttpResponseForbidden()  # Raises a 403 error
     else:
-        pini = get_object_or_404(Assignment, pk=assignment_id)
-        form = AssignmentForm(instance=pini)
+        assignment = Assignment()
 
     if request.method == 'POST':
-        f = AssignmentForm(request.POST)
-        p = f.save(commit=False)
-        if assignment_id is not None:
-            p.id = assignment_id
-            p.created = pini.created
-        p.save()
+        form = AssignmentForm(request.POST, instance=assignment)
+        a = form.save()
         messages.success(request, 'The assignment has been updated')
-        return HttpResponseRedirect(reverse('jobs_manager_app:assignment_detail',
-                                            kwargs={'pk': p.id}))
+        return HttpResponseRedirect(
+            reverse('jobs_manager_app:assignment_detail', kwargs={'pk': a.id})
+            )
 
     context['form'] = form
     return render(request, 'jobs_manager_app/assignment_update.html', context)
 
-# class IndexView(generic.ListView):
-    # model = Assignment
-    # template_name = 'jobs_manager_app/list.html'. Default: app/model_detail
-    # context_object_name = 'assignments_list'. It uses model_list by default
 
-
-class DetailView(generic.DetailView):
-    model = Assignment
-    # template_name = 'jobs_manager_app/detail.html'. Default: app/model_detail
+@login_required
+def detail(request, assignment_id=None):
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    context['assignment'] = assignment
+    return render(request, 'jobs_manager_app/assignment_detail.html', context)
 
 
 class DeleteView(generic.edit.DeleteView):

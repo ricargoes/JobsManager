@@ -19,9 +19,22 @@
 	<div class="col-md-2">{{ project.assignment_set.count }}</div>
 	<div class="col-md-1">
 		<a href="{% url 'jobs_manager_app:project_update' project.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
-		<a href="{% url 'jobs_manager_app:project_delete' project.id %}"> <span class="glyphicon glyphicon-remove delete"></span></a>
+		<a href=# data-toggle="modal" data-target="#delete-{{ project.id }}"> <span class="glyphicon glyphicon-remove delete"></span></a>
 	</div>
 	<div class="col-md-2">{{ project.created }}</div>
+</div>
+
+<div class="modal fade" id="delete-{{ project.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="{% url 'jobs_manager_app:project_delete' project.id %}" method="post">{% csrf_token %}
+				    <p style="text-align: center">Are you sure you want to delete the "{{ project.name }} project"?</p>
+				    <input class="btn btn-md btn-danger" style="float: right" type="submit" value="Delete" />
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 {% endfor %}
 <hr>

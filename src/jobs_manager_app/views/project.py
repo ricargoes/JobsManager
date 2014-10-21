@@ -1,4 +1,3 @@
-from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -38,7 +37,8 @@ def update(request, project_id=None):
             p.save()
             messages.success(request, 'The project has been updated')
             return HttpResponseRedirect(
-                reverse('jobs_manager_app:project_detail', kwargs={'pk': p.id})
+                reverse('jobs_manager_app:project_detail',
+                        kwargs={'project_id': p.id})
                 )
     else:
         form = ProjectForm(instance=project)
@@ -55,6 +55,18 @@ def detail(request, project_id=None):
     return render(request, 'jobs_manager_app/project_detail.html', context)
 
 
-class DeleteView(generic.edit.DeleteView):
-    model = Project
-    success_url = reverse_lazy('jobs_manager_app:project_index')
+def delete(request, project_id):
+    if request.method == 'POST':
+        project = get_object_or_404(Project, pk=project_id)
+        if project.customer != request.user:
+            return HttpResponseForbidden()  # Raises a 403 error
+        project.delete()
+        messages.success(request, 'Project deleted')
+        return HttpResponseRedirect(
+            reverse_lazy('jobs_manager_app:project_index')
+            )
+    else:
+        messages.error(request, 'POST method expected')
+        return HttpResponseRedirect(
+            reverse_lazy('jobs_manager_app:project_index')
+            )
