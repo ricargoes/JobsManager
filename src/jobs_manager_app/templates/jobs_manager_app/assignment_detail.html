@@ -22,6 +22,11 @@
 	<div class="col-md-2">{{ assignment.eta }}</div>
 	<div class="col-md-2">{{ assignment.created }}</div>
 </div>
+
+<div class="row">
+	<a href="{% url 'jobs_manager_app:task_create' assignment.id %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"> task</span></a>
+</div>
+
 <div class="row">
 	<br> {% for x in assignment.task_set.all %}
 	<div class="panel panel-primary">

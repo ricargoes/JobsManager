@@ -1,31 +1,50 @@
 {% extends "jobs_manager_app/base.html" %} {% block content %}
 
-<div class="row"
-	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-2">name</div>
-	<div class="col-md-2">Project</div>
-	<div class="col-md-2">State</div>
-	<div class="col-md-2"># task</div>
-	<div class="col-md-2">action</div>
-	<div class="col-md-2">created</div>
-</div>
-{% for task in task_list %}
-<div class="row">
-	<div class="col-md-2">
-		<a href="{% url 'jobs_manager_app:task_detail' task.id %}"> {{ task.name }}</a>
-	</div>
-	<div class="col-md-2">{{ task.project.name }}</div>
-	<div class="col-md-2">{{ task.int_state }}</div>
-	<div class="col-md-2">{{ task.task_set.count }}</div>
-	<div class="col-md-2">
-		<a href="{% url 'jobs_manager_app:task_update' task.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
-		<a href="{% url 'jobs_manager_app:task_delete' task.id %}"> <span class="glyphicon glyphicon-remove delete"></span></a>
-	</div>
-	<div class="col-md-2">{{ task.created }}</div>
-</div>
-{% endfor %}
-<hr>
 
-<a href="{% url 'jobs_manager_app:task_update' %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a>
+<table class="table table-hover table-condensed">
+	<tr>
+		<th>Name</th>
+		<th>Assignment</th>
+		<th>Dev</th>
+		<th>Colaborator</th>
+		<th>Priority</th>
+		<th>Closed?</th>
+		<th>Action</th>
+		<th>Created</th>
+	</tr>
+	{% for task in task_list %}
+	<tr>
+		<td>
+			<a href="{% url 'jobs_manager_app:task_detail' task.id %}"> {{ task.name }}</a>
+		</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}">{{ task.assignment.name }}</a>
+		</td>
+		<td>{{ task.assignment.dev }}</td>
+		<td>{{ task.colaborator }}</td>
+		<td>{{ task.priority }}</td>
+		<td>{{ task.bool_completed }}</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:task_update' task.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
+			<a href=# data-toggle="modal" data-target="#delete-{{ task.id }}"> <span class="glyphicon glyphicon-remove delete"></span></a>
+		</td>
+		<td>{{ task.created }}</td>
+	</tr>
+	
+	<div class="modal fade" id="delete-{{ task.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form action="{% url 'jobs_manager_app:task_delete' task.id %}" method="post" role="form">
+						{% csrf_token %}
+					    <p style="text-align: center">Are you sure you want to delete the "{{ task.name }} task"?</p>
+					    <button class="btn btn-md btn-danger" style="float: right" type="submit">Delete</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</table>
 
 {% endblock content %}

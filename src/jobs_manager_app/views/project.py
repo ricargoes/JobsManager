@@ -54,6 +54,7 @@ def detail(request, project_id=None):
     return render(request, 'jobs_manager_app/project_detail.html', context)
 
 
+@login_required
 def delete(request, project_id):
     if request.method == 'POST':
         project = get_object_or_404(Project, pk=project_id)

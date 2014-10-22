@@ -5,23 +5,31 @@
 {% endblock back_link %} 
 
 {% block content %}
-<div class="row"
-	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-2">Name</div>
-	<div class="col-md-2">Project</div>
-	<div class="col-md-2">State</div>
-	<div class="col-md-2">Price</div>
-	<div class="col-md-2">ETA</div>
-	<div class="col-md-2">Created</div>
-</div>
-<div class="row">
-	<div class="col-md-2">{{ task.name }}</div>
-	<div class="col-md-2">{{ task.project.name }}</div>
-	<div class="col-md-2">{{ task.int_state }}</div>
-	<div class="col-md-2">{{ task.price }}</div>
-	<div class="col-md-2">{{ task.eta }}</div>
-	<div class="col-md-2">{{ task.created }}</div>
-</div>
+<table class="table table-hover table-condensed">
+	<tr>
+		<th>Name</th>
+		<th>Assignment</th>
+		<th>Dev</th>
+		<th>Colaborator</th>
+		<th>Priority</th>
+		<th>Closed?</th>
+		<th>Created</th>
+	</tr>
+	<tr>
+		<td>
+			<a href="{% url 'jobs_manager_app:task_detail' task.id %}"> {{ task.name }}</a>
+		</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}">{{ task.assignment.name }}</a>
+		</td>
+		<td>{{ task.assignment.dev }}</td>
+		<td>{{ task.colaborator }}</td>
+		<td>{{ task.priority }}</td>
+		<td>{{ task.bool_completed }}</td>
+		<td>{{ task.created }}</td>
+	</tr>
+</table>
+
 <div class="row">
 	<br> {% for x in task.task_set.all %}
 	<div class="panel panel-primary">

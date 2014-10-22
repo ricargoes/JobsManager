@@ -1,0 +1,25 @@
+{% extends "jobs_manager_app/base.html" %} 
+
+{% block back_link %}
+	<a href="{% url 'jobs_manager_app:task_index' %}" >Back</a>
+{% endblock back_link %}
+
+
+
+{% block content %}
+
+{% if task_id %}
+<form action="{% url 'jobs_manager_app:task_update' task_id %}" method="post">
+{% else %}
+<form action="{% url 'jobs_manager_app:task_create' assignment_id %}" method="post">
+{% endif %}
+{% csrf_token %}
+    {% for field in form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}  {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Send message" /></p>
+</form>
+{% endblock content %}

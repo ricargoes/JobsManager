@@ -31,16 +31,16 @@ def update(request, project_id=None, assignment_id=None):
     elif project_id:
         p = get_object_or_404(Project, pk=project_id)
         assignment = Assignment(project=p)
-        context['assignment_id'] = None
 
     if request.method == 'POST':
         form = AssignmentForm(request.POST, instance=assignment)
-        a = form.save(commit=False)
-        a.save()
-        messages.success(request, 'The assignment has been updated')
-        return HttpResponseRedirect(
-            reverse('jobs_manager_app:assignment_index')
-            )
+        if form.is_valid():
+            a = form.save(commit=False)
+            a.save()
+            messages.success(request, 'The assignment has been updated')
+            return HttpResponseRedirect(
+                reverse('jobs_manager_app:assignment_index')
+                )
     else:
         form = AssignmentForm(instance=assignment)
 
@@ -57,6 +57,7 @@ def detail(request, assignment_id=None):
     return render(request, 'jobs_manager_app/assignment_detail.html', context)
 
 
+@login_required
 def delete(request, assignment_id):
     if request.method == 'POST':
         assignment = get_object_or_404(Assignment, pk=assignment_id)
