@@ -16,9 +16,7 @@
 		<th>Created</th>
 	</tr>
 	<tr>
-		<td>
-			<a href="{% url 'jobs_manager_app:task_detail' task.id %}"> {{ task.name }}</a>
-		</td>
+		<td>{{ task.name }}</td>
 		<td>
 			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}">{{ task.assignment.name }}</a>
 		</td>
@@ -30,15 +28,32 @@
 	</tr>
 </table>
 
-<div class="row">
-	<br> {% for x in task.task_set.all %}
-	<div class="panel panel-primary">
-		<div class="panel-heading">
-			<h3 class="panel-title">{{x.name}}</h3>
+<h3 style="padding-bottom:10px;">Comments</h3>
+{% for x in task.comment_set.all %}
+	<div class="row">
+		<div class="col-md-10">
+			<div class="panel panel-primary">
+				<div class="panel-body">{{x.comment|linebreaksbr}}</div>
+			</div>
 		</div>
-		<div class="panel-body">{{x.description|linebreaksbr}}</div>
+		<div class="col-md-2">
+			{{ x.user }}
+		</div>
 	</div>
-	{% endfor %}
-</div>
-
+{% endfor %}
 {% endblock content %}
+
+{% block form %}
+
+<form action="{% url 'jobs_manager_app:comment_from_task' task.id %}" method="post">
+{% csrf_token %}
+    {% for field in comment_form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}  {{ field }}
+        </div>
+    {% endfor %}
+    <p><input type="submit" value="Send message" /></p>
+</form>
+
+{% endblock form %}

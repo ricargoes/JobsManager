@@ -59,7 +59,7 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
-    assingment = models.ForeignKey(Assignment, blank=True, null=True)
+    assignment = models.ForeignKey(Assignment, blank=True, null=True)
     task = models.ForeignKey(Task, blank=True, null=True)
     user = models.ForeignKey(User)
     comment = models.TextField()

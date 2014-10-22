@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from jobs_manager_app.models import Project, Assignment
-from jobs_manager_app.forms import AssignmentForm
+from jobs_manager_app.forms import AssignmentForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
@@ -54,6 +54,7 @@ def update(request, project_id=None, assignment_id=None):
 def detail(request, assignment_id=None):
     assignment = get_object_or_404(Assignment, pk=assignment_id)
     context['assignment'] = assignment
+    context['comment_form'] = CommentForm()
     return render(request, 'jobs_manager_app/assignment_detail.html', context)
 
 

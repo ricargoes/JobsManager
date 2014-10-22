@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from jobs_manager_app.models import Assignment, Task
-from jobs_manager_app.forms import TaskForm
+from jobs_manager_app.forms import TaskForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
@@ -30,6 +30,8 @@ def update(request, assignment_id=None, task_id=None):
             return HttpResponseForbidden()  # Raises a 403 error
     elif assignment_id:
         a = get_object_or_404(Assignment, pk=assignment_id)
+        if a.dev != request.user:
+            return HttpResponseForbidden()  # Raises a 403 error
         task = Task(assignment=a)
 
     if request.method == 'POST':
@@ -54,6 +56,7 @@ def update(request, assignment_id=None, task_id=None):
 def detail(request, task_id=None):
     task = get_object_or_404(Task, pk=task_id)
     context['task'] = task
+    context['comment_form'] = CommentForm()
     return render(request, 'jobs_manager_app/task_detail.html', context)
 
 

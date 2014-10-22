@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, url
-
 from jobs_manager_app import views
 
 urlpatterns = patterns(
@@ -35,4 +34,10 @@ urlpatterns = patterns(
         views.task.update, name='task_create'),
     url(r'^task/(?P<task_id>\d+)/delete/$',
         views.task.delete, name='task_delete'),
+
+    url(r'^comment/(?P<assignment_id>\d+)/create_from assignment/$',
+        views.comment.create_from_assignment, name='comment_from_assignment'),
+    url(r'^comment/(?P<task_id>\d+)/create_from task/$',
+        views.comment.create_from_task, name='comment_from_task'),
+
     )

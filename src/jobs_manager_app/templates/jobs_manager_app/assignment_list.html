@@ -8,6 +8,7 @@
 		<th>Dev</th>
 		<th>State</th>
 		<th># task</th>
+		<th># comments</th>
 		<th>Action</th>
 		<th>Created</th>
 	</tr>
@@ -22,6 +23,7 @@
 		<td>{{ assignment.dev }}</td>
 		<td>{{ assignment.int_state }}</td>
 		<td>{{ assignment.task_set.count }}</td>
+		<td>{{ assignment.comment_set.count }}</td>
 		<td>
 			<a href="{% url 'jobs_manager_app:assignment_update' assignment.id %}"> <span class="glyphicon glyphicon-edit edit"></span></a>
 			<a href=# data-toggle="modal" data-target="#delete-{{ assignment.id }}"> <span class="glyphicon glyphicon-remove delete"></span></a>
