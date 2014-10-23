@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from django.contrib import messages
-from django.conf.global_settings import LOGIN_URL
+from django.conf.global_settings import LOGIN_URL, MEDIA_ROOT
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jobs_manager_app',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -63,7 +64,7 @@ WSGI_APPLICATION = 'jobs_manager_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'NAME': 'db.dev.sqlite3',
     }
 }
 
@@ -84,7 +85,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT = 'static-dev/'
+
+STATIC_URL = '/static-dev/'
+
+MEDIA_ROOT = 'static-dev/media-dev/'
+
+MEDIA_URL = '/static-dev/media-dev/'
+
 
 MESSAGE_TAGS = {messages.DEBUG: 'debug',
                 messages.INFO: 'info',
@@ -96,7 +104,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
 )
 
-STATIC_ROOT = 'static/'
+
 
 # LOGIN_URL = 'login:login'
 # LOGOUT_URL = 'logout:logout'

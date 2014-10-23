@@ -27,7 +27,6 @@
 		<td>{{ task.created }}</td>
 	</tr>
 </table>
-
 <h3 style="padding-bottom:10px;">Comments</h3>
 {% for x in task.comment_set.all %}
 	<div class="row">
@@ -37,7 +36,14 @@
 			</div>
 		</div>
 		<div class="col-md-2">
-			{{ x.user }}
+			<div class="row">
+				{{ x.user }}
+			</div>
+			{% if x.attachment %}
+				<div class="row">
+					<a href="{{ MEDIA_URL }}{{ x.attachment }}">tutu</a>
+				</div>
+			{% endif %}
 		</div>
 	</div>
 {% endfor %}
@@ -45,7 +51,7 @@
 
 {% block form %}
 
-<form action="{% url 'jobs_manager_app:comment_from_task' task.id %}" method="post">
+<form action="{% url 'jobs_manager_app:comment_from_task' task.id %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
     {% for field in comment_form %}
         <div class="fieldWrapper">

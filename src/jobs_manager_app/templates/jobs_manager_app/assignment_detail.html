@@ -55,9 +55,14 @@
 				<div class="col-md-2">
 					{{ x.user }}
 				</div>
+				{% if x.attachment %}
+					<div class="row">
+						<a href="{{ x.attachment.url }}">tutu</a>
+					</div>
+				{% endif %}
 			</div>
 		{% endfor %}
-		<form action="{% url 'jobs_manager_app:comment_from_assignment' assignment.id %}" method="post">
+		<form action="{% url 'jobs_manager_app:comment_from_assignment' assignment.id %}" method="post" enctype="multipart/form-data">
 		{% csrf_token %}
 		    {% for field in comment_form %}
 		        <div class="fieldWrapper">

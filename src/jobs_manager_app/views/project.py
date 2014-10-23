@@ -37,7 +37,7 @@ def update(request, project_id=None):
             messages.success(request, 'The project has been updated')
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:project_index')
-                )
+            )
     else:
         form = ProjectForm(instance=project)
 
@@ -56,17 +56,18 @@ def detail(request, project_id=None):
 
 @login_required
 def delete(request, project_id):
-    if request.method == 'POST':
-        project = get_object_or_404(Project, pk=project_id)
-        if project.customer != request.user:
-            return HttpResponseForbidden()  # Raises a 403 error
-        project.delete()
-        messages.success(request, 'Project deleted')
-        return HttpResponseRedirect(
-            reverse_lazy('jobs_manager_app:project_index')
-            )
-    else:
+    if request.method != 'POST':
         messages.error(request, 'POST method expected')
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:project_index')
-            )
+        )
+
+    project = get_object_or_404(Project, pk=project_id)
+    if project.customer != request.user:
+        return HttpResponseForbidden()  # Raises a 403 error
+
+    project.delete()
+    messages.success(request, 'Project deleted')
+    return HttpResponseRedirect(
+        reverse_lazy('jobs_manager_app:project_index')
+    )

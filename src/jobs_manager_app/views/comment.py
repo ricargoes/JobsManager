@@ -13,7 +13,7 @@ def create_from_assignment(request, assignment_id):
     if request.method == 'POST':
         assignment = get_object_or_404(Assignment, pk=assignment_id)
 
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.assignment = assignment
@@ -22,14 +22,14 @@ def create_from_assignment(request, assignment_id):
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:assignment_detail',
                         kwargs={'assignment_id': assignment.id})
-                )
+            )
 
     else:
         messages.error(request, 'POST method expected')
         return HttpResponseRedirect(
             reverse('jobs_manager_app:assignment_detail',
                     kwargs={'assignment_id': assignment.id})
-            )
+        )
 
 
 @login_required
@@ -38,7 +38,7 @@ def create_from_task(request, task_id):
     if request.method == 'POST':
         task = get_object_or_404(Task, pk=task_id)
 
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)
         if form.is_valid():
             comment = form.save(commit=False)
             comment.task = task
@@ -47,7 +47,7 @@ def create_from_task(request, task_id):
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:task_detail',
                         kwargs={'task_id': task.id})
-                )
+            )
         else:
             messages.error('form not valid')
 
@@ -56,4 +56,4 @@ def create_from_task(request, task_id):
         return HttpResponseRedirect(
             reverse('jobs_manager_app:task_detail',
                     kwargs={'task_id': task.id})
-            )
+        )

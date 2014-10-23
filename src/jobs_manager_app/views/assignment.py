@@ -40,7 +40,7 @@ def update(request, project_id=None, assignment_id=None):
             messages.success(request, 'The assignment has been updated')
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:assignment_index')
-                )
+            )
     else:
         form = AssignmentForm(instance=assignment)
 
@@ -60,17 +60,19 @@ def detail(request, assignment_id=None):
 
 @login_required
 def delete(request, assignment_id):
-    if request.method == 'POST':
-        assignment = get_object_or_404(Assignment, pk=assignment_id)
-        if assignment.project.customer != request.user:
-            return HttpResponseForbidden()  # Raises a 403 error
-        assignment.delete()
-        messages.success(request, 'Assignment deleted')
-        return HttpResponseRedirect(
-            reverse_lazy('jobs_manager_app:assignment_index')
-            )
-    else:
+    if request.method != 'POST':
         messages.error(request, 'POST method expected')
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:assignment_index')
-            )
+        )
+
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    if assignment.project.customer != request.user:
+        return HttpResponseForbidden()  # Raises a 403 error
+
+    assignment.delete()
+    messages.success(request, 'Assignment deleted')
+    return HttpResponseRedirect(
+        reverse_lazy('jobs_manager_app:assignment_index')
+    )
+        

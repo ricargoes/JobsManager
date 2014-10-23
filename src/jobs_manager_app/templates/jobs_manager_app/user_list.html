@@ -1,0 +1,35 @@
+{% extends "jobs_manager_app/base.html" %} {% block content %}
+
+
+<table class="table table-hover table-condensed">
+	<tr>
+		<th>Username</th>
+		<th>Group</th>
+		<th>Last name</th>
+		<th>First name</th>
+		<th>email</th>
+		<th># projects</th>
+		<th># assignations</th>
+		<th># collaborations</th>
+		<th># comments</th>
+		<th>Since</th>
+	</tr>
+	{% for user in user_list %}
+	<tr>
+		<td>
+			<a href="{% url 'jobs_manager_app:user_detail' user.id %}"> {{ user.username }}</a>
+		</td>
+		<td>{{ user.groups.first }}</td>
+		<td>{{ user.last_name }}</td>
+		<td>{{ user.first_name }}</td>
+		<td>{{ user.email }}</td>
+		<td>{{ user.project_set.count }}</td>
+		<td>{{ user.assignment_set.count }}</td>
+		<td>{{ user.task_set.count }}</td>
+		<td>{{ user.comment_set.count }}</td>
+		<td>{{ user.date_joined|date:"M, Y" }}</td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% endblock content %}

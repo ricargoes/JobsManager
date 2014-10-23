@@ -35,9 +35,13 @@ urlpatterns = patterns(
     url(r'^task/(?P<task_id>\d+)/delete/$',
         views.task.delete, name='task_delete'),
 
-    url(r'^comment/(?P<assignment_id>\d+)/create_from assignment/$',
+    url(r'^user/$', views.user.index, name='user_index'),
+    url(r'^user/(?P<user_id>\d+)/$',
+        views.user.detail, name='user_detail'),
+
+    url(r'^comment/(?P<assignment_id>\d+)/create_from_assignment/$',
         views.comment.create_from_assignment, name='comment_from_assignment'),
-    url(r'^comment/(?P<task_id>\d+)/create_from task/$',
+    url(r'^comment/(?P<task_id>\d+)/create_from_task/$',
         views.comment.create_from_task, name='comment_from_task'),
 
     )

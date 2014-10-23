@@ -42,7 +42,7 @@ def update(request, assignment_id=None, task_id=None):
             messages.success(request, 'The task has been updated')
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:task_index')
-                )
+            )
     else:
         form = TaskForm(instance=task)
 
@@ -62,18 +62,16 @@ def detail(request, task_id=None):
 
 @login_required
 def delete(request, task_id):
-    if request.method == 'POST':
-        task = get_object_or_404(Task, pk=task_id)
-        if (task.assignment.dev != request.user
-                or task.bool_completed is True):
-            return HttpResponseForbidden()  # Raises a 403 error
-        task.delete()
-        messages.success(request, 'Task deleted')
-        return HttpResponseRedirect(
-            reverse_lazy('jobs_manager_app:task_index')
-            )
-    else:
+    if request.method != 'POST':
         messages.error(request, 'POST method expected')
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:task_index')
-            )
+        )
+
+    task = get_object_or_404(Task, pk=task_id)
+    if (task.assignment.dev != request.user or task.bool_completed is True):
+        return HttpResponseForbidden()  # Raises a 403 error
+
+    task.delete()
+    messages.success(request, 'Task deleted')
+    return HttpResponseRedirect(reverse_lazy('jobs_manager_app:task_index'))
