@@ -3,7 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.conf.urls.static import static
-from jobs_manager_project import settings
+from jobs_manager_project.settings import defaults
 admin.autodiscover()
 
 urlpatterns = patterns(
@@ -21,6 +21,6 @@ urlpatterns = patterns(
         {'next_page': '/'}, name='logout'),
     url(r'^logout/(?P<next_page>.*)/$',
         'django.contrib.auth.views.logout', name='logout_next'),) + (static(
-            settings.STATIC_URL,
-            document_root=settings.STATIC_ROOT
+            defaults.STATIC_URL,
+            document_root=defaults.STATIC_ROOT
             ))

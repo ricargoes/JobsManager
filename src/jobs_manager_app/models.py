@@ -21,16 +21,48 @@ class Assignment(models.Model):
     project = models.ForeignKey(Project)
     name = models.CharField(max_length=200)
     requirements = models.TextField()
-    STATE = (
-        (0, 'Pending estimate'),
-        (1, 'Estimate proposed'),
-        (2, 'Estimate rejected'),
-        (3, 'Assignment accepted'),
-        (4, 'Assignment completed'),
-        (5, 'Assignment paid'),
-        (6, 'Assignment closed')
-        )
-    int_state = models.IntegerField(default=0, choices=STATE)
+    STATE = {
+        0: {'state': 'Assignment created', 'next': 'Price/ETA proposal',
+            'desc': ''},
+        1: {'state': 'Offer proposed', 'next': 'Confirmation',
+            'desc': ''},
+        -1: {'state': 'Assignment rejected', 'next': 'Price/ETA reevaluation',
+             'desc': ''},
+        2: {'state': 'Assignment confirmed', 'next': 'Working',
+            'desc': ''},
+        -2: {'state': 'Assignment in hold', 'next': 'Meeting conditions',
+             'desc': ''},
+        3: {'state': 'Assignment completed', 'next': 'Payment',
+            'desc': ''},
+        -3: {'state': 'Payment in hold', 'next': 'Payment',
+             'desc': ''},
+        4: {'state': 'Assignment paid', 'next': 'Closure',
+            'desc': ''},
+        5: {'state': 'Assignment closed', 'next': 'Closed',
+            'desc': ''},
+    }
+    STATE2 = (
+        (0, {'state': 'Assignment created', 'next': 'Price/ETA proposal',
+             'desc': ''}),
+        (1, {'state': 'Offer proposed', 'next': 'Confirmation',
+             'desc': ''}),
+        (-1, {'state': 'Assignment rejected', 'next': 'Price/ETA reevaluation',
+              'desc': ''}),
+        (2, {'state': 'Assignment confirmed', 'next': 'Working',
+             'desc': ''}),
+        (-2, {'state': 'Assignment in hold', 'next': 'Meeting conditions',
+              'desc': ''}),
+        (3, {'state': 'Assignment completed', 'next': 'Payment',
+             'desc': ''}),
+        (-3, {'state': 'Payment in hold', 'next': 'Payment',
+              'desc': ''}),
+        (4, {'state': 'Assignment paid', 'next': 'Closure',
+             'desc': ''}),
+        (5, {'state': 'Assignment closed', 'next': 'Closed',
+             'desc': ''}),
+    )
+
+    int_state = models.IntegerField(default=0, choices=STATE2)
     deal_comment = models.TextField(blank=True)
     price = models.FloatField(blank=True, null=True)
     eta = models.DateField(blank=True, null=True)
@@ -50,7 +82,12 @@ class Task(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     priority = models.IntegerField(default=1)
-    bool_completed = models.BooleanField(default=False, blank=True)
+    STATE = (
+        (False, 'Pending'),
+        (True, 'Completed')
+        )
+    bool_completed = models.BooleanField(default=False, blank=True,
+                                         choices=STATE)
     created = models.DateField(auto_now_add=True)
     modified = models.DateField(auto_now=True)
 

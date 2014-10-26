@@ -21,7 +21,7 @@
 			<a href="{% url 'jobs_manager_app:project_detail' assignment.project.id %}">{{ assignment.project.name }}</a>
 		</td>
 		<td>{{ assignment.dev }}</td>
-		<td>{{ assignment.int_state }}</td>
+		<td>{{ assignment.get_int_state_display.state }}</td>
 		<td>{{ assignment.task_set.count }}</td>
 		<td>{{ assignment.comment_set.count }}</td>
 		<td>
@@ -46,5 +46,4 @@
 	</div>
 	{% endfor %}
 </table>
-
 {% endblock content %}

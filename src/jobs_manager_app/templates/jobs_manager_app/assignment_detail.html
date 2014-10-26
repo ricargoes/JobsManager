@@ -1,27 +1,49 @@
 {% extends "jobs_manager_app/base.html" %}
 
-{% block back_link %}
-	<a href="{% url 'jobs_manager_app:assignment_index' %}" >Back</a>
-{% endblock back_link %} 
-
 {% block content %}
-<div class="row"
-	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-2">Name</div>
-	<div class="col-md-2">Project</div>
-	<div class="col-md-2">State</div>
-	<div class="col-md-2">Price</div>
-	<div class="col-md-2">ETA</div>
-	<div class="col-md-2">Created</div>
-</div>
-<div class="row">
-	<div class="col-md-2">{{ assignment.name }}</div>
-	<div class="col-md-2">{{ assignment.project.name }}</div>
-	<div class="col-md-2">{{ assignment.int_state }}</div>
-	<div class="col-md-2">{{ assignment.price }}</div>
-	<div class="col-md-2">{{ assignment.eta }}</div>
-	<div class="col-md-2">{{ assignment.created }}</div>
-</div>
+<table class="table table-hover table-condensed">
+	<tr>
+		<th>Name</th>
+		<th>Project</th>
+		<th>Dev</th>
+		<th>State</th>
+		<th>Price</th>
+		<th>ETA</th>
+		<th>Created</th>
+	</tr>
+	<tr>
+		<td>
+			<a href="{% url 'jobs_manager_app:assignment_detail' assignment.id %}"> {{ assignment.name }}</a>
+		</td>
+		<td>
+			<a href="{% url 'jobs_manager_app:project_detail' assignment.project.id %}">{{ assignment.project.name }}</a>
+		</td>
+		<td>{{ assignment.dev }}</td>
+		<td>{{ assignment.get_int_state_display }}</td>
+		<td>{{ assignment.price }}</td>
+		<td>{{ assignment.eta }}</td>
+		<td>{{ assignment.created }}</td>
+	</tr>
+</table>
+
+<!-- NEGOTIATION -->
+
+{% if assignment.int_state == 0 and assignment.dev == request.user %}
+	<a href=# data-toggle="modal" data-target="#estimate"> Estimate!</a>
+{% elif assignment.int_state == 1 and assignment.project.customer == request.user %}
+	<a href=# data-toggle="modal" data-target="#confirm_estimate"> Check Offer!</a>
+{% elif assignment.int_state == 2 and assignment.dev == request.user %}
+	<a href=# data-toggle="modal" data-target="#complete_assignment"> Complete assignment</a>
+{% elif assignment.int_state == 3 and assignment.project.customer == request.user %}
+	<a href=# data-toggle="modal" data-target="#pay_assignment"> Pay assignment</a>
+{% elif assignment.int_state == 4 and assignment.dev == request.user %}
+	<a href=# data-toggle="modal" data-target="#close_assignment"> Close assignment</a>
+{% elif assignment.int_state == -1 and assignment.dev == request.user %}
+	<a href=# data-toggle="modal" data-target="#estimate"> Make another offer!</a>
+{% endif %}
+
+<!-- END NEGOTIATION -->
+
 
 <div class="row">
 	<a href="{% url 'jobs_manager_app:task_create' assignment.id %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"> task</span></a>
@@ -35,7 +57,11 @@
 		{% for x in assignment.task_set.all %}
 		<div class="panel panel-primary">
 			<div class="panel-heading">
-				<h3 class="panel-title">{{x.name}}</h3>
+				<h3 class="panel-title">
+					<a href="{% url 'jobs_manager_app:task_detail' x.id %}" >
+						{{x.name}}
+					</a>
+				</h3>
 			</div>
 			<div class="panel-body">{{x.description|linebreaksbr}}</div>
 		</div>
@@ -75,6 +101,83 @@
 		
 	</div>
 </div>
+
+{% block modals %}
+
+
+<div class="modal fade" id="estimate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="{% url 'jobs_manager_app:assignment_estimate' assignment.id %}" method="post" role="form">
+					{% csrf_token %}
+					{{ estimation_form.as_p }}
+				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="confirm_estimate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="{% url 'jobs_manager_app:assignment_confirm_estimate' assignment.id %}" method="post" role="form">
+					{% csrf_token %}
+					{{ deal_form }}
+					<button class="btn btn-md btn-danger" style="float: right" type="submit" name="decision" value="rejected" >Reject</button>
+				    <button class="btn btn-md btn-success" style="float: right" type="submit" name="decision" value="confirmed" >Confirm</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="complete_assignment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="{% url 'jobs_manager_app:assignment_state_forward' assignment.id %}" method="post" role="form">
+					{% csrf_token %}
+					Are you sure you have completed the assignment?
+				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="pay_assignment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="{% url 'jobs_manager_app:assignment_state_forward' assignment.id %}" method="post" role="form">
+					{% csrf_token %}
+					Have you paid the assignment?
+				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="close_assignment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<form action="{% url 'jobs_manager_app:assignment_state_forward' assignment.id %}" method="post" role="form">
+					{% csrf_token %}
+					Are you sure you want to close the assignment? No going back!
+				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock modals %}
+
 
 {% endblock content %}
 

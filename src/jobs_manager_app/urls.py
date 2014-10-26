@@ -25,6 +25,15 @@ urlpatterns = patterns(
     url(r'^assignment/(?P<assignment_id>\d+)/delete/$',
         views.assignment.delete, name='assignment_delete'),
 
+    url(r'^assignment/(?P<assignment_id>\d+)/estimate/$',
+        views.assignment.estimate, name='assignment_estimate'),
+    url(r'^assignment/(?P<assignment_id>\d+)/confirm/$',
+        views.assignment.confirm_estimate, name='assignment_confirm_estimate'),
+    url(r'^assignment/(?P<assignment_id>\d+)/state_forward/$',
+        views.assignment.state_forward, name='assignment_state_forward'),
+    url(r'^assignment/(?P<assignment_id>\d+)/state_forward/$',
+        views.assignment.toggle_hold, name='assignment_toggle_hold'),
+
     url(r'^task/$', views.task.index, name='task_index'),
     url(r'^task/(?P<task_id>\d+)/$',
         views.task.detail, name='task_detail'),
