@@ -1,5 +1,6 @@
 from django.contrib import admin
-from jobs_manager_app.models import Project, Assignment, Task, Comment
+from jobs_manager_app.models import (Project, Assignment, Task, Comment,
+                                     Notification)
 
 
 class TaskInline(admin.TabularInline):
@@ -42,3 +43,4 @@ admin.site.register(Task, TaskAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Comment)
+admin.site.register(Notification)
