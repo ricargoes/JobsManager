@@ -6,6 +6,8 @@ from jobs_manager_app.models import Assignment, Task
 from jobs_manager_app.forms import TaskForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.utils.translation import ugettext as _
+
 
 context = {}
 context['tag'] = 'task'
@@ -39,7 +41,7 @@ def update(request, assignment_id=None, task_id=None):
         if form.is_valid():
             t = form.save(commit=False)
             t.save()
-            messages.success(request, 'The task has been updated')
+            messages.success(request, _('The task has been updated'))
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:task_index')
             )
@@ -63,7 +65,7 @@ def detail(request, task_id=None):
 @login_required
 def delete(request, task_id):
     if request.method != 'POST':
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:task_index')
         )
@@ -73,5 +75,5 @@ def delete(request, task_id):
         return HttpResponseForbidden()  # Raises a 403 error
 
     task.delete()
-    messages.success(request, 'Task deleted')
+    messages.success(request, _('Task deleted'))
     return HttpResponseRedirect(reverse_lazy('jobs_manager_app:task_index'))

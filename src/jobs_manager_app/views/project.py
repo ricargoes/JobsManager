@@ -5,6 +5,7 @@ from django.contrib import messages
 from jobs_manager_app.models import Project
 from jobs_manager_app.forms import ProjectForm
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
 context = {}
 context['tag'] = 'project'
@@ -34,7 +35,7 @@ def update(request, project_id=None):
             p = form.save(commit=False)
             p.customer = request.user
             p.save()
-            messages.success(request, 'The project has been updated')
+            messages.success(request, _('The project has been updated'))
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:project_index')
             )
@@ -57,7 +58,7 @@ def detail(request, project_id=None):
 @login_required
 def delete(request, project_id):
     if request.method != 'POST':
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:project_index')
         )
@@ -67,7 +68,7 @@ def delete(request, project_id):
         return HttpResponseForbidden()  # Raises a 403 error
 
     project.delete()
-    messages.success(request, 'Project deleted')
+    messages.success(request, _('Project deleted'))
     return HttpResponseRedirect(
         reverse_lazy('jobs_manager_app:project_index')
     )

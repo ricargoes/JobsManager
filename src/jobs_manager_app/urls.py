@@ -31,8 +31,10 @@ urlpatterns = patterns(
         views.assignment.confirm_estimate, name='assignment_confirm_estimate'),
     url(r'^assignment/(?P<assignment_id>\d+)/state_forward/$',
         views.assignment.state_forward, name='assignment_state_forward'),
-    url(r'^assignment/(?P<assignment_id>\d+)/state_forward/$',
+    url(r'^assignment/(?P<assignment_id>\d+)/toggle_hold/$',
         views.assignment.toggle_hold, name='assignment_toggle_hold'),
+    url(r'^assignment/(?P<assignment_id>\d+)/hold_payment/$',
+        views.assignment.hold_payment, name='assignment_hold_payment'),
 
     url(r'^task/$', views.task.index, name='task_index'),
     url(r'^task/(?P<task_id>\d+)/$',

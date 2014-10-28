@@ -5,6 +5,7 @@ from django.contrib import messages
 from jobs_manager_app.models import Assignment, Task
 from jobs_manager_app.forms import CommentForm
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
 
 
 @login_required
@@ -23,9 +24,11 @@ def create_from_assignment(request, assignment_id):
                 reverse('jobs_manager_app:assignment_detail',
                         kwargs={'assignment_id': assignment.id})
             )
+        else:
+            messages.error(_('Form not valid'))
 
     else:
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse('jobs_manager_app:assignment_detail',
                     kwargs={'assignment_id': assignment.id})
@@ -49,10 +52,10 @@ def create_from_task(request, task_id):
                         kwargs={'task_id': task.id})
             )
         else:
-            messages.error('form not valid')
+            messages.error(_('Form not valid'))
 
     else:
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse('jobs_manager_app:task_detail',
                     kwargs={'task_id': task.id})

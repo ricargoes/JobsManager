@@ -85,14 +85,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_ROOT = 'static-dev/'
-
-STATIC_URL = '/static-dev/'
-
-MEDIA_ROOT = 'static-dev/media-dev/'
-
-MEDIA_URL = '/static-dev/media-dev/'
-
 
 MESSAGE_TAGS = {messages.DEBUG: 'debug',
                 messages.INFO: 'info',
@@ -105,6 +97,24 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 )
 
 
+STATIC_ROOT = 'static-dev/'
+
+STATIC_URL = '/static-dev/'
+
+MEDIA_ROOT = 'media-dev/'
+
+MEDIA_URL = '/media-dev/'
+
 
 # LOGIN_URL = 'login:login'
 # LOGOUT_URL = 'logout:logout'
+
+
+# EMAIL server settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+# Optional SMTP authentication information for EMAIL_HOST.
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False

@@ -4,10 +4,11 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from jobs_manager_app.models import Project, Assignment
+from jobs_manager_app.models import Project, Assignment, Notification
 from jobs_manager_app.forms import (AssignmentForm, CommentForm,
                                     EstimationForm, DealForm)
 from datetime import date
+from django.utils.translation import ugettext as _
 
 
 context = {}
@@ -43,7 +44,7 @@ def update(request, project_id=None, assignment_id=None):
         if form.is_valid():
             a = form.save(commit=False)
             a.save()
-            messages.success(request, 'The assignment has been updated')
+            messages.success(request, _('The assignment has been updated'))
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:assignment_index')
             )
@@ -69,7 +70,7 @@ def detail(request, assignment_id=None):
 @login_required
 def delete(request, assignment_id):
     if request.method != 'POST':
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:assignment_index')
         )
@@ -79,7 +80,7 @@ def delete(request, assignment_id):
         return HttpResponseForbidden()  # Raises a 403 error
 
     assignment.delete()
-    messages.success(request, 'Assignment deleted')
+    messages.success(request, _('Assignment deleted'))
     return HttpResponseRedirect(
         reverse_lazy('jobs_manager_app:assignment_index')
     )
@@ -89,7 +90,7 @@ def delete(request, assignment_id):
 def estimate(request, assignment_id):
     # Check models.Assignment for the description of the states
     if request.method != 'POST':
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:assignment_index')
         )
@@ -104,7 +105,19 @@ def estimate(request, assignment_id):
         a = form.save(commit=False)
         a.int_state = 1
         a.save()
-        messages.success(request, 'Estimation proposed.')
+
+        title = (_('%(assign_name)s: Estimation proposed.')
+                 % {'assign_name': assignment.name})
+        body = ('There is and offer for the assignment '
+                + assignment.name + ' waiting for your approval. ' +
+                'Price:' + str(assignment.price) + ', eta: ' +
+                str(assignment.eta))
+        recipient = assignment.project.customer
+        notif = Notification(name=title, description=body, int_type=2,
+                             user=recipient)
+        notif.save()
+
+        messages.success(request, title)
         return HttpResponseRedirect(
             reverse('jobs_manager_app:assignment_index')
         )
@@ -131,12 +144,30 @@ def confirm_estimate(request, assignment_id):
         a = form.save(commit=False)
         if decision == "rejected":  # reject offer
             a.int_state = -1
-            messages.error(request, 'Offer rejected.')
+            title = (_('%(assign_name)s: Offer rejected.')
+                     % {'assign_name': assignment.name})
+            body = ('The offer for the assignment '
+                    + assignment.name +
+                    ' has been rejected. Please, make another offer.' +
+                    ' Comment from the customer: ' + assignment.deal_comment)
+            messages.error(request, title)
+
         elif decision == "confirmed":  # confirm offer
             a.int_state = 2
-            messages.success(request, 'Offer confirmed')
+            title = (_('%(assign_name)s: Offer confirmed.')
+                     % {'assign_name': assignment.name})
+            body = ('The offer for the assignment '
+                    + assignment.name + ' has been approved.' +
+                    ' Comment from the customer: ' + assignment.deal_comment)
+            messages.success(request, title)
 
         a.save()
+
+        recipient = assignment.dev
+        notif = Notification(name=title, description=body, int_type=2,
+                             user=recipient)
+        notif.save()
+
         return HttpResponseRedirect(
             reverse('jobs_manager_app:assignment_index')
         )
@@ -146,7 +177,7 @@ def confirm_estimate(request, assignment_id):
 def state_forward(request, assignment_id):
     # Check models.Assignment for the description of the states
     if request.method != 'POST':
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:assignment_index')
         )
@@ -155,22 +186,39 @@ def state_forward(request, assignment_id):
     if not ((assignment.dev == request.user
             and assignment.int_state in [2, 4]) or
             (assignment.project.customer == request.user
-            and assignment.int_state == 3)):
+            and assignment.int_state in [-3, 3])):
         return HttpResponseForbidden()  # Raises a 403 error
 
     if assignment.int_state == 2:
         assignment.delivery_date = date.today()
-        text = 'Assignment submitted'
-    elif assignment.int_state == 3:
+        title = (_('%(assign_name)s: Assignment submitted.')
+                 % {'assign_name': assignment.name})
+        body = ('The assignment ' + assignment.name + ' has been completed.')
+        recipient = assignment.project.customer
+
+    elif assignment.int_state in [-3, 3]:
+        assignment.int_state = 3
         assignment.payment_date = date.today()
-        text = 'Assignment paid'
+        title = (_('%(assign_name)s: Assignment paid.')
+                 % {'assign_name': assignment.name})
+        body = ('The assignment ' + assignment.name + ' has been paid.')
+        recipient = assignment.dev
+
     elif assignment.int_state == 4:
         assignment.close_date = date .today()
-        text = 'Assignment closed'
+        title = (_('%(assign_name)s: Assignment closed.')
+                 % {'assign_name': assignment.name})
+        body = ('The assignment ' + assignment.name + ' has been closed.')
+        recipient = assignment.project.customer
 
     assignment.int_state = assignment.int_state + 1
     assignment.save()
-    messages.success(request, text)
+
+    notif = Notification(name=title, description=body, int_type=2,
+                         user=recipient)
+    notif.save()
+
+    messages.success(request, title)
     return HttpResponseRedirect(
         reverse('jobs_manager_app:assignment_index')
     )
@@ -180,7 +228,7 @@ def state_forward(request, assignment_id):
 def toggle_hold(request, assignment_id):
     # Check models.Assignment for the description of the states
     if request.method != 'POST':
-        messages.error(request, 'POST method expected')
+        messages.error(request, _('POST method expected.'))
         return HttpResponseRedirect(
             reverse_lazy('jobs_manager_app:assignment_index')
         )
@@ -193,10 +241,58 @@ def toggle_hold(request, assignment_id):
     assignment.int_state = -1*assignment.int_state
     assignment.save()
     if assignment.int_state == 2:
-        text = 'Assignment in progress'
+        title = (_('%(assign_name)s: Assignment in progress.')
+                 % {'assign_name': assignment.name})
+        body = ('The assignment ' + assignment.name + ' is again in progress.')
+
     elif assignment.int_state == -2:
-        text = 'Assignment in hold'
-    messages.success(request, text)
+        title = (_('%(assign_name)s: Assignment in hold.')
+                 % {'assign_name': assignment.name})
+        body = ('The assignment ' + assignment.name + ' is in hold.')
+
+    recipient = assignment.project.customer
+    notif = Notification(name=title, description=body, int_type=2,
+                         user=recipient)
+    notif.save()
+
+    messages.success(request, title)
     return HttpResponseRedirect(
         reverse('jobs_manager_app:assignment_index')
     )
+
+
+@login_required
+def hold_payment(request, assignment_id):
+    # Check models.Assignment for the description of the states
+    if request.method != 'POST':
+        messages.error(request, 'POST method expected.')
+        return HttpResponseRedirect(
+            reverse_lazy('jobs_manager_app:assignment_index')
+        )
+
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    if not (assignment.project.customer == request.user
+            and assignment.int_state == 3):
+        return HttpResponseForbidden()  # Raises a 403 error
+
+    assignment.int_state = -3
+    assignment.save()
+
+    title = (_('%(assign_name)s: Payment in hold.')
+             % {'assign_name': assignment.name})
+    body = ('Payment for the assignment ' + assignment.name + ' is in hold.')
+    recipient = assignment.dev
+    notif = Notification(name=title, description=body, int_type=2,
+                         user=recipient)
+    notif.save()
+
+    messages.success(request, title)
+    return HttpResponseRedirect(
+        reverse('jobs_manager_app:assignment_index')
+    )
+
+# from django.core.mail import send_mail
+#     send_mail(text, 'The payment for the assignment '
+#               + assignment.name + ' is in hold.',
+#               'localhost', [assignment.dev.email],
+#               fail_silently=False)
