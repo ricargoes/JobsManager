@@ -4,11 +4,12 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from jobs_manager_app.models import Project, Assignment, Notification
+from django.utils.translation import ugettext as _
+from datetime import date
+from jobs_manager_app.models import Project, Assignment
+from jobs_manager_app import tools
 from jobs_manager_app.forms import (AssignmentForm, CommentForm,
                                     EstimationForm, DealForm)
-from datetime import date
-from django.utils.translation import ugettext as _
 
 
 context = {}
@@ -28,12 +29,13 @@ def index(request):
 @login_required
 def update(request, project_id=None, assignment_id=None):
     # We load the instance we are going to change.
-    if assignment_id:
+    if assignment_id:  # Update
         assignment = get_object_or_404(Assignment, pk=assignment_id)
         if (assignment.project.customer != request.user
                 or assignment.int_state > 0):
             return HttpResponseForbidden()  # Raises a 403 error
-    elif project_id:
+
+    elif project_id:  # Create
         p = get_object_or_404(Project, pk=project_id)
         assignment = Assignment(project=p)
         if (p.customer != request.user):
@@ -44,6 +46,10 @@ def update(request, project_id=None, assignment_id=None):
         if form.is_valid():
             a = form.save(commit=False)
             a.save()
+
+            notif = tools.notif_new_assignment(a)
+            notif.save()
+
             messages.success(request, _('The assignment has been updated'))
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:assignment_index')
@@ -106,18 +112,10 @@ def estimate(request, assignment_id):
         a.int_state = 1
         a.save()
 
-        title = (_('%(assign_name)s: Estimation proposed.')
-                 % {'assign_name': assignment.name})
-        body = ('There is and offer for the assignment '
-                + assignment.name + ' waiting for your approval. ' +
-                'Price:' + str(assignment.price) + ', eta: ' +
-                str(assignment.eta))
-        recipient = assignment.project.customer
-        notif = Notification(name=title, description=body, int_type=2,
-                             user=recipient)
+        notif = tools.notif_negotiation(a)
         notif.save()
 
-        messages.success(request, title)
+        messages.success(request, notif.name)
         return HttpResponseRedirect(
             reverse('jobs_manager_app:assignment_index')
         )
@@ -144,28 +142,15 @@ def confirm_estimate(request, assignment_id):
         a = form.save(commit=False)
         if decision == "rejected":  # reject offer
             a.int_state = -1
-            title = (_('%(assign_name)s: Offer rejected.')
-                     % {'assign_name': assignment.name})
-            body = ('The offer for the assignment '
-                    + assignment.name +
-                    ' has been rejected. Please, make another offer.' +
-                    ' Comment from the customer: ' + assignment.deal_comment)
-            messages.error(request, title)
+            messages.error(request, _('Assignment rejected.'))
 
         elif decision == "confirmed":  # confirm offer
             a.int_state = 2
-            title = (_('%(assign_name)s: Offer confirmed.')
-                     % {'assign_name': assignment.name})
-            body = ('The offer for the assignment '
-                    + assignment.name + ' has been approved.' +
-                    ' Comment from the customer: ' + assignment.deal_comment)
-            messages.success(request, title)
+            messages.success(request, _('Assignment confirmed'))
 
         a.save()
 
-        recipient = assignment.dev
-        notif = Notification(name=title, description=body, int_type=2,
-                             user=recipient)
+        notif = tools.notif_negotiation(a)
         notif.save()
 
         return HttpResponseRedirect(
@@ -191,34 +176,18 @@ def state_forward(request, assignment_id):
 
     if assignment.int_state == 2:
         assignment.delivery_date = date.today()
-        title = (_('%(assign_name)s: Assignment submitted.')
-                 % {'assign_name': assignment.name})
-        body = ('The assignment ' + assignment.name + ' has been completed.')
-        recipient = assignment.project.customer
-
     elif assignment.int_state in [-3, 3]:
         assignment.int_state = 3
-        assignment.payment_date = date.today()
-        title = (_('%(assign_name)s: Assignment paid.')
-                 % {'assign_name': assignment.name})
-        body = ('The assignment ' + assignment.name + ' has been paid.')
-        recipient = assignment.dev
-
     elif assignment.int_state == 4:
         assignment.close_date = date .today()
-        title = (_('%(assign_name)s: Assignment closed.')
-                 % {'assign_name': assignment.name})
-        body = ('The assignment ' + assignment.name + ' has been closed.')
-        recipient = assignment.project.customer
 
     assignment.int_state = assignment.int_state + 1
     assignment.save()
 
-    notif = Notification(name=title, description=body, int_type=2,
-                         user=recipient)
+    notif = tools.notif_negotiation(assignment)
     notif.save()
 
-    messages.success(request, title)
+    messages.success(request, notif.name)
     return HttpResponseRedirect(
         reverse('jobs_manager_app:assignment_index')
     )
@@ -240,22 +209,11 @@ def toggle_hold(request, assignment_id):
 
     assignment.int_state = -1*assignment.int_state
     assignment.save()
-    if assignment.int_state == 2:
-        title = (_('%(assign_name)s: Assignment in progress.')
-                 % {'assign_name': assignment.name})
-        body = ('The assignment ' + assignment.name + ' is again in progress.')
 
-    elif assignment.int_state == -2:
-        title = (_('%(assign_name)s: Assignment in hold.')
-                 % {'assign_name': assignment.name})
-        body = ('The assignment ' + assignment.name + ' is in hold.')
-
-    recipient = assignment.project.customer
-    notif = Notification(name=title, description=body, int_type=2,
-                         user=recipient)
+    notif = tools.notif_negotiation(assignment)
     notif.save()
 
-    messages.success(request, title)
+    messages.success(request, notif.name)
     return HttpResponseRedirect(
         reverse('jobs_manager_app:assignment_index')
     )
@@ -278,15 +236,10 @@ def hold_payment(request, assignment_id):
     assignment.int_state = -3
     assignment.save()
 
-    title = (_('%(assign_name)s: Payment in hold.')
-             % {'assign_name': assignment.name})
-    body = ('Payment for the assignment ' + assignment.name + ' is in hold.')
-    recipient = assignment.dev
-    notif = Notification(name=title, description=body, int_type=2,
-                         user=recipient)
+    notif = tools.notif_negotiation(assignment)
     notif.save()
 
-    messages.success(request, title)
+    messages.success(request, notif.name)
     return HttpResponseRedirect(
         reverse('jobs_manager_app:assignment_index')
     )

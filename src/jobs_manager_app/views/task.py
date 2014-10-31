@@ -2,11 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
-from jobs_manager_app.models import Assignment, Task
-from jobs_manager_app.forms import TaskForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils.translation import ugettext as _
+from jobs_manager_app.models import Assignment, Task
+from jobs_manager_app.forms import TaskForm, CommentForm
+from jobs_manager_app import tools
 
 
 context = {}
@@ -41,6 +42,10 @@ def update(request, assignment_id=None, task_id=None):
         if form.is_valid():
             t = form.save(commit=False)
             t.save()
+
+            notif = tools.notif_negotiation(t)
+            notif.save()
+
             messages.success(request, _('The task has been updated'))
             return HttpResponseRedirect(
                 reverse('jobs_manager_app:task_index')

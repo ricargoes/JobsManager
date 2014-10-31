@@ -98,10 +98,9 @@ class Notification(models.Model):
         (0, _('New task')),
         (1, _('New assignment')),
         (2, _('Negotiation process')),
-        (3, _('Task closed')),
-        (4, _('Comment in assignment')),
-        (5, _('Comment in task')),
-        (6, _('Comment in assignment')),
+        (3, _('Closed task')),
+        (4, _('Comment in task')),
+        (5, _('Comment in assignment')),
         )
     int_type = models.IntegerField(default=False, choices=NOTIF_TYPE)
     created = models.DateField(auto_now_add=True)
