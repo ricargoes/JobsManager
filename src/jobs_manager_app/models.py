@@ -102,7 +102,8 @@ class Notification(models.Model):
         (4, _('Comment in task')),
         (5, _('Comment in assignment')),
         )
-    int_type = models.IntegerField(default=False, choices=NOTIF_TYPE)
+    int_type = models.IntegerField(choices=NOTIF_TYPE)
+    bool_seen = models.BooleanField(default=False)
     created = models.DateField(auto_now_add=True)
     modified = models.DateField(auto_now=True)
 

@@ -55,4 +55,9 @@ urlpatterns = patterns(
     url(r'^comment/(?P<task_id>\d+)/create_from_task/$',
         views.comment.create_from_task, name='comment_from_task'),
 
+    url(r'^notification/user_list/$',
+        views.notification.user_notif_list, name='notif_user_list'),
+    url(r'^notification/(?P<notif_id>\d+)/toggle_seen/$',
+        views.notification.toggle_mark_as_read, name='notif_toggle_seen'),
+
     )
