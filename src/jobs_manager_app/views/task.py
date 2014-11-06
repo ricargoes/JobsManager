@@ -43,8 +43,9 @@ def update(request, assignment_id=None, task_id=None):
             t = form.save(commit=False)
             t.save()
 
-            notif = tools.notif_negotiation(t)
-            notif.save()
+            if task.colaborator:
+                notif = tools.notif_new_task(t)
+                notif.save()
 
             messages.success(request, _('The task has been updated'))
             return HttpResponseRedirect(
@@ -80,5 +81,32 @@ def delete(request, task_id):
         return HttpResponseForbidden()  # Raises a 403 error
 
     task.delete()
+    messages.success(request, _('Task deleted'))
+    return HttpResponseRedirect(reverse_lazy('jobs_manager_app:task_index'))
+
+
+@login_required
+def close_task(request, task_id):
+    if request.method != 'POST':
+        messages.error(request, _('POST method expected'))
+        return HttpResponseRedirect(
+            reverse_lazy('jobs_manager_app:task_index')
+        )
+
+    task = get_object_or_404(Task, pk=task_id)
+    if (task.assignment.dev != request.user or task.bool_completed is True):
+        return HttpResponseForbidden()  # Raises a 403 error
+
+    task.bool_completed = True
+    task.save()
+
+    if task.colaborator:  # Notification
+        if (task.colaborator == request.user):
+            recipient = task.assignment.dev
+        else:
+            recipient = task.colaborator
+        notif = tools.notif_closed_task(task, recipient)
+        notif.save()
+
     messages.success(request, _('Task deleted'))
     return HttpResponseRedirect(reverse_lazy('jobs_manager_app:task_index'))

@@ -44,7 +44,7 @@
 	<a href=# data-toggle="modal" data-target="#estimate"> Make another offer!</a>
 {% elif assignment.int_state == -2 and assignment.dev == request.user %}
 	<a href=# data-toggle="modal" data-target="#hold"> Resume assignment</a>
-{% elif assignment.int_state == -3 and assignment.dev == request.user %}
+{% elif assignment.int_state == -3 and assignment.project.customer == request.user %}
 	<a href=# data-toggle="modal" data-target="#pay_assignment"> Pay assignment</a>
 {% endif %}
 
