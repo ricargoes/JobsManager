@@ -57,7 +57,7 @@ urlpatterns = patterns(
 
     url(r'^notification/user_list/$',
         views.notification.user_notif_list, name='notif_user_list'),
-    url(r'^notification/(?P<notif_id>\d+)/toggle_seen/$',
+    url(r'^notification/toggle_seen/$',
         views.notification.toggle_mark_as_read, name='notif_toggle_seen'),
 
     )

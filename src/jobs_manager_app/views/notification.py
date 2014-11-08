@@ -14,8 +14,8 @@ def user_notif_list(request):
 
 
 @login_required
-def toggle_mark_as_read(request, notif_id):
-    notif = get_object_or_404(Notification, pk=notif_id)
+def toggle_mark_as_read(request):
+    notif = get_object_or_404(Notification, pk=request.POST['notif_id'])
     if (notif.user != request.user):
         return HttpResponseForbidden()  # Raises a 403 error
 

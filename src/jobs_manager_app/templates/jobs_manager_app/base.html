@@ -114,43 +114,100 @@
 
 
 <!-- POPOVER!! -->
-<div class="popover-notif-head hide">Notifications</div>
+<div class="popover-notif-head hide">Notifications <a href="#" class="dismiss" style="float: right"><span class="glyphicon glyphicon-ok"></span> Dismiss all</a></div>
 <div class="popover-notif-content hide">
 	<div class="list-notif">
 	<!-- Waiting to be filled -->
 	</div>
 </div>
 
+
+
 <script>
+
+enabled = 'list-group-item-info'; // Class for unread notif items
+disabled = 'off'; // Class for read notif items
+
+function mark_as_read(notif_id){
+	
+	if ($('.notif-'+notif_id).attr('class').indexOf(enabled) >= 0) {
+		var formData =	{user_id: "{{ request.user_id }}", csrfmiddlewaretoken:'{{csrf_token}}', notif_id: notif_id }
+		
+		$.ajax({
+			url: "{% url 'jobs_manager_app:notif_toggle_seen' %}",
+			type: "POST",
+			data: formData
+		})
+		$('.notif-'+notif_id).removeClass(enabled).addClass(disabled);
+	}
+}
+
+
+function mark_as_unread(notif_id){
+	
+	if ($('.notif-'+notif_id).attr('class').indexOf(disabled) >= 0) {
+		var formData =	{user_id: "{{ request.user_id }}", csrfmiddlewaretoken:'{{csrf_token}}', notif_id: notif_id }
+		
+		$.ajax({
+			url: "{% url 'jobs_manager_app:notif_toggle_seen' %}",
+			type: "POST",
+			data: formData
+		})
+		$('.notif-'+notif_id).removeClass(disabled).addClass(enabled);
+		$('#modal-notif-'+notif_id).modal('hide')
+	}
+}
+
+
 $(document).ready(function() {
-	var formData =	{user_id: "{{ request.user_id }}", csrfmiddlewaretoken:'{{csrf_token}}' }
+
+	$('#popover-notif').popover({ 
+	    html : true,
+	    title: function() {
+	      return $(".popover-notif-head").html();
+	    },
+	    content: function() {
+	      return $(".popover-notif-content").html();
+	    }
+	}).on('shown.bs.popover', function(){
+		$('.popover-content').on('click', function(){
+			$('#popover-notif').popover('hide');
+		});
+		$('.dismiss').on('click', function(){
+			$('.list-group-item').each(function(){
+				  mark_as_read($( this ).attr( 'pk' ));
+			})
+		})
+	});
+
 	
 	$.ajax({
 		url: "{% url 'jobs_manager_app:notif_user_list' %}",
 		type: "POST",
-		data: formData,
+		data: {user_id: "{{ request.user_id }}", csrfmiddlewaretoken:'{{csrf_token}}'},
 		success: function(response) {
 			$(response).each(function() {
 				var active = '';
 				if (this.fields.bool_seen == false){
-					active_class = 'list-group-item-warning';
+					active_class = enabled;
 				}else{
-					active_class = 'disabled';
+					active_class = disabled;
 				}
 				$('.list-notif').append(
-			        $('<a>').attr('class', 'list-group-item '+active_class).attr('href', '#').attr('data-toggle', 'modal').attr('data-target', '#modal-notif-'+this.pk).append(
+			        $('<a>').attr('class', 'list-group-item '+active_class+ ' notif-'+this.pk).attr('pk', this.pk).attr('href', '#').attr('onclick','mark_as_read('+this.pk+')').attr('data-toggle', 'modal').attr('data-target', '#modal-notif-'+this.pk).append(
 			            '<strong>'+this.fields.created+'</strong><br>'+this.fields.name
 				));
 				$('#modals').append(
 					$('<div>').attr('class', 'modal fade').attr('id', 'modal-notif-'+this.pk).attr('tabindex', '1').attr('role', 'dialog').attr('aria-hidden', 'true').append(
 						$('<div>').attr('class', 'modal-dialog modal-lg').append(
 							$('<div>').attr('class', 'modal-content').append(
-								$('<div>').attr('class', 'modal-header').append(
+								$('<div>').attr('style', "text-align:left").attr('class', 'modal-header').append(
 									$('<h4>').append(
 										this.fields.name
 									)
 								),
 								$('<div>').attr('class', 'modal-body').append(
+										$('<a>').attr('style', "float:right").attr('id','keep-unread-'+this.pk).attr('onclick','mark_as_unread('+this.pk+')').attr('href','#').append('<span class="glyphicon glyphicon-envelope"> </span> Keep as unread'),
 										'<span style="white-space: pre-line">'+this.fields.description+'</span>'
 								)
 							)
@@ -159,29 +216,9 @@ $(document).ready(function() {
 				)
 				
 			});
-			console.log(response)
 		}
 
 	})
 	
 })
-</script>
-
-<script>
-
-$('#popover-notif').popover({ 
-    html : true,
-    title: function() {
-      return $(".popover-notif-head").html();
-    },
-    content: function() {
-      return $(".popover-notif-content").html();
-    }
-}).on('shown.bs.popover', function(e){
-	$('.popover-content').on('click', function(e){
-		$('#popover-notif').popover('hide');
-	});
-});
-
-
 </script>
