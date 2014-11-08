@@ -40,7 +40,7 @@
 					<li class="user-nav"><a href="{% url 'jobs_manager_app:user_index' %}">Users</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" id="popover-notif" data-container="body" data-toggle="popover" data-trigger="click" data-placement="left"><span class="glyphicon glyphicon-bell"></span></a></li>
+					<li><a href="#" id="popover-notif" data-container="body" data-toggle="popover" data-trigger="click" data-placement="left" style="font-size: 17px"><span class="glyphicon glyphicon-bell"></span> <span id="notif-badge" class="badge alert-danger"></span></a></li>
 				</ul>
 			</div>
 		</div>
@@ -125,8 +125,9 @@
 
 <script>
 
-enabled = 'list-group-item-info'; // Class for unread notif items
-disabled = 'off'; // Class for read notif items
+var enabled = 'list-group-item-info'; // Class for unread notif items
+var disabled = 'off'; // Class for read notif items
+var notif_count = 0;
 
 function mark_as_read(notif_id){
 	
@@ -139,6 +140,13 @@ function mark_as_read(notif_id){
 			data: formData
 		})
 		$('.notif-'+notif_id).removeClass(enabled).addClass(disabled);
+		
+		notif_count -= 1;
+		if (notif_count == 0){
+			$('#notif-badge').text('');
+		}else{
+			$('#notif-badge').text(notif_count);
+		}
 	}
 }
 
@@ -155,6 +163,10 @@ function mark_as_unread(notif_id){
 		})
 		$('.notif-'+notif_id).removeClass(disabled).addClass(enabled);
 		$('#modal-notif-'+notif_id).modal('hide')
+		
+		notif_count += 1;
+		$('#notif-badge').text(notif_count);
+		
 	}
 }
 
@@ -187,8 +199,9 @@ $(document).ready(function() {
 		data: {user_id: "{{ request.user_id }}", csrfmiddlewaretoken:'{{csrf_token}}'},
 		success: function(response) {
 			$(response).each(function() {
-				var active = '';
+				
 				if (this.fields.bool_seen == false){
+					notif_count += 1;
 					active_class = enabled;
 				}else{
 					active_class = disabled;
@@ -214,6 +227,12 @@ $(document).ready(function() {
 						)
 					)
 				)
+				
+				if (notif_count == 0){
+					$('#notif-badge').text('');
+				}else{
+					$('#notif-badge').text(notif_count);
+				}
 				
 			});
 		}
