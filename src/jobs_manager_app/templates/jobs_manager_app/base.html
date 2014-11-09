@@ -9,17 +9,13 @@
 
 <script type="text/javascript" src="{% static 'jobs_manager_app/js/jquery-2.1.1.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'jobs_manager_app/js/bootstrap.min.js' %}"></script>
-<style type="text/css">
-    .popover{
-        max-width:600px;
-    }
-</style>
+
 <head>
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
 	{% block header %}
-	<nav class="navbar navbar-inverse" role="navigation">
+	<nav class="navbar navbar-inverse" role="navigation" style="margin-bottom:0px">
 		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -40,18 +36,20 @@
 					<li class="user-nav"><a href="{% url 'jobs_manager_app:user_index' %}">Users</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" id="popover-notif" data-container="body" data-toggle="popover" data-trigger="click" data-placement="left" style="font-size: 17px"><span class="glyphicon glyphicon-bell"></span> <span id="notif-badge" class="badge alert-danger"></span></a></li>
+					<li><a href="#" id="popover-notif" data-container="body" data-toggle="popover" data-trigger="click" data-placement="left" style="font-size: 17px;"><span class="glyphicon glyphicon-bell"></span> <span id="notif-badge" class="badge "></span></a></li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 	
+	<div id="color-stripe-{{ tag }}" style="padding-bottom:5px"></div>
+	
 	<script>
-		$( "li.{{ tag }}-nav" ).toggleClass( "active" );
+		$( "li.{{ tag }}-nav" ).addClass( "active" );
 	</script>
 	{% endblock %}
 	
-	<div class="container theme-showcase" role="main">
+	<div class="container theme-showcase content-{{ tag }}" role="main">
 	
 		{% if messages %}
 	    	{% for message in messages %}
@@ -87,7 +85,7 @@
 
 
 	<hr>
-    <div class="container">
+    <div class="container content-{{ tag }}">
 	{% block footer %}
 		<p id="bla"> R. Gómez </p>
 		{% if user.is_authenticated %}

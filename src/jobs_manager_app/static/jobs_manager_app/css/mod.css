@@ -1,3 +1,91 @@
+
+#color-stripe-project{
+	background-color: darkblue;
+}
+.content-project a{
+	color: darkblue;
+}
+.panel-project > .panel-heading {
+	background-color: darkblue;
+}
+.panel-project {
+	border-color: darkblue;
+}
+a.btn-project {
+	border-color: darkblue;
+	background-color: darkblue;
+}
+
+
+
+#color-stripe-assignment{
+	background-color: green;
+}
+.content-assignment a{
+	color: green;
+}
+.panel-assignment > .panel-heading {
+	background-color: green;
+}
+.panel-assignment {
+	border-color: green;
+}
+a.btn-assignment {
+	border-color: green;
+	background-color: green;
+}
+
+
+#color-stripe-task{
+	background-color: goldenrod;
+}
+.content-task a{
+	color: goldenrod;
+}
+.panel-task > .panel-heading {
+	background-color: goldenrod;
+}
+.panel-task {
+	border-color: goldenrod;
+}
+a.btn-task {
+	border-color: goldenrod;
+	background-color: goldenrod;
+}
+
+
+#color-stripe-user{
+	background-color: grey;
+}
+.content-user a{
+	color: grey;
+}
+.panel-user > .panel-heading {
+	background-color: grey;
+}
+.panel-user {
+	border-color: grey;
+}
+a.btn-user {
+	border-color: grey;
+	background-color: grey;
+}
+
+
+
+
+
+.panel a{
+	color: white;
+}
+a.btn{
+	color: white;
+}
 .delete{
-	color:red;
+	color: red;
+}
+
+
+.popover{
+	max-width: 600px;
 }

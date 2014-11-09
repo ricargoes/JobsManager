@@ -39,6 +39,6 @@
 	{% endfor %}
 </table>
 
-<a href="{% url 'jobs_manager_app:project_create' %}" class="btn btn-md btn-primary" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a>
+<a href="{% url 'jobs_manager_app:project_create' %}" class="btn btn-md btn-{{ tag }}" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a>
 
 {% endblock content %}
