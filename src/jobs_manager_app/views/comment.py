@@ -23,8 +23,8 @@ def create_from_assignment(request, assignment_id):
             comment.save()
 
             if (assignment.dev == comment.user):
-                recipient = assignment.project.dev
-            elif (assignment.projet.dev == comment.user):
+                recipient = assignment.project.customer
+            elif (assignment.projet.customer == comment.user):
                 recipient = assignment.dev
             notif = tools.notif_comment_assign(comment, recipient)
             notif.save()

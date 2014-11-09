@@ -1,67 +1,98 @@
 {% extends "jobs_manager_app/base.html" %}
+{% load i18n %}
+
 
 {% block content %}
-<table class="table table-hover table-condensed">
-	<tr>
-		<th>Name</th>
-		<th>Project</th>
-		<th>Dev</th>
-		<th>State</th>
-		<th>Price</th>
-		<th>ETA</th>
-		<th>Created</th>
-	</tr>
-	<tr>
-		<td>
-			<a href="{% url 'jobs_manager_app:assignment_detail' assignment.id %}"> {{ assignment.name }}</a>
-		</td>
-		<td>
-			<a href="{% url 'jobs_manager_app:project_detail' assignment.project.id %}">{{ assignment.project.name }}</a>
-		</td>
-		<td>{{ assignment.dev }}</td>
-		<td>{{ assignment.get_int_state_display }}</td>
-		<td>{{ assignment.price }}</td>
-		<td>{{ assignment.eta }}</td>
-		<td>{{ assignment.created }}</td>
-	</tr>
-</table>
-
-<!-- NEGOTIATION -->
-
-{% if assignment.int_state == 0 and assignment.dev == request.user %}
-	<a href=# data-toggle="modal" data-target="#estimate"> Estimate!</a>
-{% elif assignment.int_state == 1 and assignment.project.customer == request.user %}
-	<a href=# data-toggle="modal" data-target="#confirm_estimate"> Check Offer!</a>
-{% elif assignment.int_state == 2 and assignment.dev == request.user %}
-	<a href=# data-toggle="modal" data-target="#hold"> Hold assignment</a> <br>
-	<a href=# data-toggle="modal" data-target="#complete_assignment"> Complete assignment</a>
-{% elif assignment.int_state == 3 and assignment.project.customer == request.user %}
-	<a href=# data-toggle="modal" data-target="#pay_assignment"> Pay assignment</a><br>
-	<a href=# data-toggle="modal" data-target="#hold_payment"> Hold payment</a>
-{% elif assignment.int_state == 4 and assignment.dev == request.user %}
-	<a href=# data-toggle="modal" data-target="#close_assignment"> Close assignment</a>
-{% elif assignment.int_state == -1 and assignment.dev == request.user %}
-	<a href=# data-toggle="modal" data-target="#estimate"> Make another offer!</a>
-{% elif assignment.int_state == -2 and assignment.dev == request.user %}
-	<a href=# data-toggle="modal" data-target="#hold"> Resume assignment</a>
-{% elif assignment.int_state == -3 and assignment.project.customer == request.user %}
-	<a href=# data-toggle="modal" data-target="#pay_assignment"> Pay assignment</a>
-{% endif %}
-
-<!-- END NEGOTIATION -->
-
 
 <div class="row">
-	<a href="{% url 'jobs_manager_app:task_create' assignment.id %}" class="btn btn-md btn-{{tag}}" style="float:right"> <span class="glyphicon glyphicon-plus create"> task</span></a>
+	<div class="col-md-2">
+		<p style="margin-top: 40px">
+			{% trans "Project:" %} <br>
+			<a href="{% url 'jobs_manager_app:project_detail' assignment.project.id %}" class="link-project"> {{ assignment.project }}</a>
+		</p>
+		<p>
+			{% trans "Developer:" %} <br>
+			<a href="{% url 'jobs_manager_app:user_detail' assignment.dev.id %}" class="link-user"> {{ assignment.dev.username }}</a>
+		</p>
+			
+	</div>
+	
+	<div class="col-md-7">
+		<div class="row">
+			<h3>{{ assignment.name }}</h3>
+		</div>
+		<div class="row">
+			{% trans "Requirements:" %}<br>
+			<div style="border: 1px solid gainsboro; border-radius: 6px; padding: 7px; margin-bottom: 4px">
+				{{ assignment.requirements|linebreaksbr }}
+			</div>
+		</div>
+		<div class="row">
+			{% trans "Price:" %} {{ assignment.price|default_if_none:"N/A" }} €
+			<div style="float: right">
+				{% trans "ETA:" %} {{ assignment.eta|default_if_none:"N/A" }}
+			</div>
+		</div>
+		
+	</div>
+	
+	<div class="col-md-3">
+		<div class="panel panel-{{ tag }}" style="margin-top: 20px">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					{% trans "Status" %}
+				</h3>
+			</div>
+			<div class="panel-body">
+				<p>{% trans "State:" %} {{ assignment.int_state }} </p>
+				{% if assignment.int_state != 5 %}
+					<p>{% trans "Waiting for:" %} {{ assignment.int_state }} </p>
+				{% endif %}{% if assignment.delivery_date %}
+					<p>{% trans "Delivery date:" %} {{ assignment.delivery_date|default_if_none:"N/A" }} </p>
+				{% endif %}{% if assignment.payment_date %}
+					<p>{% trans "Payment date:" %} {{ assignment.payment_date|default_if_none:"N/A" }} </p>
+				{% endif %}{% if assignment.close_date %}
+					<p>{% trans "Close date:" %} {{ assignment.close_date|default_if_none:"N/A" }} </p>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<!-- NEGOTIATION -->
+	<div style="text-align: right; margin-right:15px">
+		{% if assignment.int_state == 0 and assignment.dev == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#estimate"> {% trans "Estimate" %}</a>
+		{% elif assignment.int_state == 1 and assignment.project.customer == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#confirm_estimate"> {% trans "Check Offer" %}</a>
+		{% elif assignment.int_state == 2 and assignment.dev == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#complete_assignment"> {% trans "Complete" %}</a>
+			<a href=# class="btn btn-md" style="background-color: darkred" data-toggle="modal" data-target="#hold"> {% trans "Hold" %}</a> 
+		{% elif assignment.int_state == 3 and assignment.project.customer == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#pay_assignment"> {% trans "Pay" %}</a> 
+			<a href=# class="btn btn-md" style="background-color: darkred" data-toggle="modal" data-target="#hold_payment"> {% trans "Hold payment" %}</a>
+		{% elif assignment.int_state == 4 and assignment.dev == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#close_assignment"> {% trans "Close" %}</a>
+		{% elif assignment.int_state == -1 and assignment.dev == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#estimate"> {% trans "Reevaluate" %}</a>
+		{% elif assignment.int_state == -2 and assignment.dev == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#hold"> {% trans "Resume" %}</a>
+		{% elif assignment.int_state == -3 and assignment.project.customer == request.user %}
+			<a href=# class="btn btn-md" style="background-color: green" data-toggle="modal" data-target="#pay_assignment"> {% trans "Pay" %}</a>
+		{% endif %}
+	</div>
+	
+	<!-- END NEGOTIATION -->
 </div>
 
+<br>
+<hr>
 <br>
 
 <div class="row">
 	<div class="col-md-6">
-		<h3 style="padding-bottom:10px;">Tasks</h3>
+		<h3 style="margin-bottom:15px;">Tasks <a href="{% url 'jobs_manager_app:task_create' assignment.id %}" class="btn btn-md btn-task" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a></h3>
+		
 		{% for x in assignment.task_set.all %}
-		<div class="panel panel-{{ tag }}">
+		<div class="panel panel-task">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a href="{% url 'jobs_manager_app:task_detail' x.id %}" >
@@ -80,7 +111,7 @@
 		{% for x in assignment.comment_set.all %}
 			<div class="row">
 				<div class="col-md-10">
-					<div class="panel panel-primary">
+					<div class="panel panel-{{ tag }}">
 						<div class="panel-body">{{x.comment|linebreaksbr}}</div>
 					</div>
 				</div>

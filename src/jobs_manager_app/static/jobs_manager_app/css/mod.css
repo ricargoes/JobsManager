@@ -71,11 +71,24 @@ a.btn-user {
 	background-color: grey;
 }
 
+a.link-project{
+	color: darkblue;
+}
+a.link-assignment{
+	color: green;
+}
+a.link-task{
+	color: goldenrod;
+}
+a.link-user{
+	color: grey;
+}
 
 
 
 
-.panel a{
+
+.panel-heading,.panel-heading a, .a.btn{
 	color: white;
 }
 a.btn{

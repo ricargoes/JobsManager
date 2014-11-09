@@ -40,7 +40,7 @@
 	<div class="row">
 		<h3 style="padding-bottom:10px;">Projects</h3>
 		{% for x in user.project_set.all %}
-		<div class="panel panel-primary">
+		<div class="panel panel-project">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a href="{% url 'jobs_manager_app:project_detail' x.id %}" >
@@ -58,7 +58,7 @@
 	<div class="row">
 		<h3 style="padding-bottom:10px;">Assignments</h3>
 		{% for x in user.assignment_set.all %}
-		<div class="panel panel-primary">
+		<div class="panel panel-assignment">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a href="{% url 'jobs_manager_app:assignment_detail' x.id %}" >
@@ -76,7 +76,7 @@
 	<div class="row">
 		<h3 style="padding-bottom:10px;">Tasks</h3>
 		{% for x in user.task_set.all %}
-		<div class="panel panel-primary">
+		<div class="panel panel-task">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a href="{% url 'jobs_manager_app:task_detail' x.id %}" >

@@ -178,6 +178,7 @@ def state_forward(request, assignment_id):
         assignment.delivery_date = date.today()
     elif assignment.int_state in [-3, 3]:
         assignment.int_state = 3
+        assignment.payment_date = date .today()
     elif assignment.int_state == 4:
         assignment.close_date = date .today()
 

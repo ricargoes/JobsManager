@@ -8,7 +8,8 @@ from jobs_manager_app.models import Notification
 
 @login_required
 def user_notif_list(request):
-    notif_list = Notification.objects.filter(user=request.user)
+    notif_list = (Notification.objects.filter(user=request.user)
+                  .order_by('-id'))[:8]
     data = serializers.serialize("json", notif_list)
     return HttpResponse(data, content_type="application/json")
 
