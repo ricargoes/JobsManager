@@ -1,38 +1,91 @@
 {% extends "jobs_manager_app/base.html" %}
+{% load i18n %}
 
 {% block content %}
-<div class="row"
-	style="font-weight: bold; border-bottom: 1px solid grey; margin-bottom: 2px;">
-	<div class="col-md-3">name</div>
-	<div class="col-md-3">customer</div>
-	<div class="col-md-2">website</div>
-	<div class="col-md-2"># assignments</div>
-	<div class="col-md-2">created</div>
-</div>
-<div class="row">
-	<div class="col-md-3">{{ project.name }}</div>
-	<div class="col-md-3">{{ project.customer }}</div>
-	<div class="col-md-2">{{ project.website }}</div>
-	<div class="col-md-2">{{ project.assignment_set.count }}</div>
-	<div class="col-md-2">{{ project.created }}</div>
-</div>
 
 <div class="row">
-	<a href="{% url 'jobs_manager_app:assignment_create' project.id %}" class="btn btn-md btn-{{ tag }}" style="float:right"> <span class="glyphicon glyphicon-plus create"> assignment</span></a>
-</div>
-
-<div class="row">
-	<br> {% for x in project.assignment_set.all %}
-	<div class="panel panel-{{ tag }}">
-		<div class="panel-heading">
-			<h3 class="panel-title">
-				<a href="{% url 'jobs_manager_app:assignment_detail' x.id %}" >
-					{{x.name}}
-				</a>
-			</h3>
-		</div>
-		<div class="panel-body">{{x.requirements|linebreaksbr}}</div>
+	<div class="col-md-2">
+		<p style="margin-top: 60px">
+			<span class="glyphicon glyphicon-globe" style="color: darkblue;"> </span> {% trans "Website:" %} <br>
+			<a href="{{ project.website }}" class="link-project"> {{ project.website }}</a>
+		</p>
+		<br>
+		<p>
+			<span class="glyphicon glyphicon-user" style="color: darkblue;"> </span> {% trans "Customer:" %} <br>
+			<a href="{% url 'jobs_manager_app:user_detail' project.customer.id %}" class="link-user"> {{ project.customer.username }}</a>
+		</p>
+		<br>
+		<p>
+			<span class="glyphicon glyphicon-calendar" style="color: darkblue;"> </span> {% trans "Created:" %} <br>
+			{{ project.created }}
+		</p>
+			
 	</div>
+	
+	<div class="col-md-8">
+		<div class="row">
+			<h3><span style="background-color: darkblue; padding-right: 10px; margin-right: 8px;"> </span> {{ project.name }}</h3>
+		</div>
+		<div class="row">
+			{% trans "Description:" %}<br>
+			<div style="border: 1px solid gainsboro; border-radius: 6px; padding: 7px; margin-bottom: 4px; margin-left: 5px;">
+				{{ project.description|linebreaksbr }}
+			</div>
+		</div>
+		<div class="row">
+			<div style="float: right">
+				<span class="glyphicon glyphicon-pushpin" style="color: darkblue;"> </span> {% trans "Active assignments:" %} {{ project.assignment_set.count }}
+			</div>
+		</div>
+		
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+<br>
+<br>
+<hr>
+<br>
+<br>
+
+<div class="row">
+	<div class="row">
+		<div class="col-md-6">
+			<h3 style="margin-bottom:15px;">{% trans "Assignments" %} <a href="{% url 'jobs_manager_app:assignment_create' project.id %}" class="btn btn-md btn-assignment" style="float:right"> <span class="glyphicon glyphicon-plus create"> </span></a></h3>
+		</div>
+		<div class="col-md-6"></div>
+	</div>
+	
+	{% for x in project.assignment_set.all %}
+	{% cycle '<div class="row">' '' %}
+	<div class="col-md-6">
+		<div class="panel panel-assignment">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a href="{% url 'jobs_manager_app:assignment_detail' x.id %}" >
+						{{x.name}}
+						{% if x.int_state == 5 %}{% trans "(Closed)" %}{% endif %}
+					</a>
+					<div style="float: right">
+						<a href="{% url 'jobs_manager_app:user_detail' x.dev.id %}" >{{ x.dev }}</a>
+					</div>
+				</h3>
+			</div>
+			<div class="panel-body">
+				<div style="float: right; border: 1px solid gainsboro; border-radius: 3px; padding: 5px; margin-left: 5px; margin-bottom: 5px;" >
+					{% trans "ETA:" %} {{ x.eta|default_if_none:"N/A" }}<br>
+					{% trans "Price:" %} {{ x.price|default_if_none:"N/A" }} €
+				</div>
+				{{x.requirements|linebreaksbr}}
+			</div>
+		</div>
+	</div>
+	{% if forloop.last and not forloop.counter|divisibleby:2 %}
+		<div class="col-md-6"></div>
+		</div>
+	{% endif %}
+	{% cycle '' '</div>' %}
+		
 	{% endfor %}
 </div>
 

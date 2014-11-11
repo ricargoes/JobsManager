@@ -59,7 +59,7 @@ class Assignment(models.Model):
 
 class Task(models.Model):
     assignment = models.ForeignKey(Assignment)
-    colaborator = models.ForeignKey(User)
+    colaborator = models.ForeignKey(User, blank=True, null=True)
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     priority = models.IntegerField(default=1)

@@ -1,28 +1,67 @@
 {% extends "jobs_manager_app/base.html" %}
+{% load i18n %}
 
 {% block content %}
-<table class="table table-hover table-condensed">
-	<tr>
-		<th>Name</th>
-		<th>Assignment</th>
-		<th>Dev</th>
-		<th>Colaborator</th>
-		<th>Priority</th>
-		<th>Closed?</th>
-		<th>Created</th>
-	</tr>
-	<tr>
-		<td>{{ task.name }}</td>
-		<td>
-			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}">{{ task.assignment.name }}</a>
-		</td>
-		<td>{{ task.assignment.dev }}</td>
-		<td>{{ task.colaborator }}</td>
-		<td>{{ task.priority }}</td>
-		<td>{{ task.bool_completed }}</td>
-		<td>{{ task.created }}</td>
-	</tr>
-</table>
+
+<div class="row">
+	<div class="col-md-2">
+		<p style="margin-top: 60px">
+			<span class="glyphicon glyphicon-book" style="color: goldenrod;"> </span> {% trans "Project:" %} <br>
+			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.project.id %}" class="link-project"> {{ task.assignment.project }}</a>
+		</p>
+		<p>
+			<span class="glyphicon glyphicon-pushpin" style="color: goldenrod;"> </span> {% trans "Assignment:" %} <br>
+			<a href="{% url 'jobs_manager_app:assignment_detail' task.assignment.id %}" class="link-assignment"> {{ task.assignment }}</a>
+		</p>
+		<br>
+		<p>
+			<span class="glyphicon glyphicon-pencil" style="color: goldenrod;"> </span> {% trans "Dev:" %} <br>
+			<a href="{% url 'jobs_manager_app:user_detail' task.assignment.dev.id %}" class="link-user"> {{ task.assignment.dev.username }}</a>
+		</p>
+		{% if task.colaborator %}
+			<p>
+				<span class="glyphicon glyphicon-thumbs-up" style="color: goldenrod;"> </span> {% trans "Colaborator:" %} <br>
+				<a href="{% url 'jobs_manager_app:user_detail' task.colaborator.id %}" class="link-user"> {{ task.colaborator.username }}</a>
+			</p>
+		{% endif %}
+		<br>
+		<p>
+			<span class="glyphicon glyphicon-calendar" style="color: goldenrod;"> </span> {% trans "Created:" %} <br>
+			{{ task.created }}
+		</p>
+			
+	</div>
+	
+	<div class="col-md-8">
+		<div class="row">
+			<h3><span style="background-color: goldenrod; padding-right: 10px; margin-right: 8px;"> </span> {{ task.name }}</h3>
+		</div>
+		<div class="row">
+			{% trans "Description:" %}<br>
+			<div style="border: 1px solid gainsboro; border-radius: 6px; padding: 7px; margin-bottom: 4px; margin-left: 5px;">
+				{{ task.description|linebreaksbr }}
+			</div>
+		</div>
+		<div class="row">
+		{% trans "Priority:" %} {{ task.priority }}
+			<div style="float: right">
+				{% if task.bool_completed %}<span class="glyphicon glyphicon-lock" style="color: goldenrod;"></span> <strong>{% trans "Completed" %}</strong>{% endif %}
+			</div>
+		</div>
+		
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+<br>
+<br>
+<hr>
+<br>
+<br>
+
+
+
+
 <h3 style="padding-bottom:10px;">Comments</h3>
 {% for x in task.comment_set.all %}
 	<div class="row">

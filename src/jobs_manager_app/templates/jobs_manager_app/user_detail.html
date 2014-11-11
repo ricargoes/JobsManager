@@ -1,93 +1,209 @@
 {% extends "jobs_manager_app/base.html" %}
-
-{% block back_link %}
-	<a href="{% url 'jobs_manager_app:user_index' %}" >Back</a>
-{% endblock back_link %} 
+{% load i18n %}
 
 {% block content %}
-<table class="table table-hover table-condensed">
-	<tr>
-		<th>Username</th>
-		<th>Group</th>
-		<th>Last name</th>
-		<th>First name</th>
-		<th>email</th>
-		<th># projects</th>
-		<th># assignations</th>
-		<th># collaborations</th>
-		<th># comments</th>
-		<th>Since</th>
-	</tr>
-	<tr>
-		<td>
-			<a href="{% url 'jobs_manager_app:user_detail' user.id %}"> {{ user.username }}</a>
-		</td>
-		<td>
-			{{ user.groups.first }}
-		</td>
-		<td>{{ user.last_name }}</td>
-		<td>{{ user.first_name }}</td>
-		<td>{{ user.email }}</td>
-		<td>{{ user.project_set.count }}</td>
-		<td>{{ user.assignment_set.count }}</td>
-		<td>{{ user.task_set.count }}</td>
-		<td>{{ user.comment_set.count }}</td>
-		<td>{{ user.date_joined|date:"M, Y" }}</td>
-	</tr>
-</table>
+
+<div class="row">
+	<div class="col-md-2">
+		<p style="margin-top: 60px">
+			<span class="glyphicon glyphicon-book" style="color: grey;"> </span> {% trans "Projects:" %}
+			<a href="{% url 'jobs_manager_app:project_index' %}" class="link-project"> {{ user.project_set.count }}</a>
+		</p>
+		<p>
+			<span class="glyphicon glyphicon-pushpin" style="color: grey;"> </span> {% trans "Assignments:" %}
+			<a href="{% url 'jobs_manager_app:assignment_index' %}" class="link-assignment"> {{ user.assignment_set.count }}</a>
+		</p>
+		<p>
+			<span class="glyphicon glyphicon-paperclip" style="color: grey;"> </span> {% trans "Task:" %}
+			<a href="{% url 'jobs_manager_app:assignment_index' %}" class="link-task"> {{ user.task_set.count }}</a>
+		</p>
+		<br>
+		<p>
+			<span class="glyphicon glyphicon-calendar" style="color: grey;"> </span> {% trans "Joined:" %}<br>
+			{{ user.date_joined|date:"j-M-Y " }}
+		</p>
+			
+	</div>
+	
+	<div class="col-md-8">
+		<div class="row">
+			<h3><span style="background-color: grey; padding-right: 10px; margin-right: 8px;"> </span> {{ user.username }}</h3>
+		</div>
+		<div class="row">
+			<div style="border: 1px solid gainsboro; border-radius: 6px; padding: 7px; margin-bottom: 4px; margin-left: 5px;">
+				<div class="row" style="margin-bottom: 5px;">
+					<div class="col-md-6" style="text-align: right"> {% trans "First Name:" %}</div>
+					<div class="col-md-6">{{ user.first_name }}</div>
+				</div>
+				<div class="row" style="margin-bottom: 5px;">
+					<div class="col-md-6" style="text-align: right"> {% trans "Last Name:" %}</div>
+					<div class="col-md-6">{{ user.last_name }}</div>
+				</div>
+				<div class="row" style="margin-bottom: 5px;">
+					<div class="col-md-6" style="text-align: right"> {% trans "e-mail:" %}</div>
+					<div class="col-md-6">{{ user.email }}</div>
+				</div>
+				<div class="row" style="margin-bottom: 5px;">
+					<div class="col-md-6" style="text-align: right"> {% trans "Groups:" %}</div>
+					<div class="col-md-6">
+						{% for x in user.groups.all %}
+							{{ x }}{% if not forloop.last %}, {% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div style="float: right">
+				{% if user.is_active %}
+					<span class="glyphicon glyphicon-thumbs-up" style="color: grey;"> </span> {% trans "Active user" %}
+				{% else %}
+					<span class="glyphicon glyphicon-thumbs-down" style="color: grey;"> </span> {% trans "Inactive user" %}
+				{% endif %}
+			</div>
+		</div>
+		
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+<br>
+<br>
+<hr>
+<br>
+<br>
+
+
+<!-- PROJECTS -->
 
 {% if user.project_set.count != 0 %}
+<div class="row">
 	<div class="row">
-		<h3 style="padding-bottom:10px;">Projects</h3>
-		{% for x in user.project_set.all %}
-		<div class="panel panel-project">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<a href="{% url 'jobs_manager_app:project_detail' x.id %}" >
-						{{x.name}}
-					</a>
-				</h3>
-			</div>
-			<div class="panel-body">{{x.description|linebreaksbr}}</div>
+		<div class="col-md-6">
+			<h3 style="margin-bottom:15px;">{% trans "Projects" %} </h3>
 		</div>
-		{% endfor %}
+		<div class="col-md-6"></div>
 	</div>
+	
+	{% for x in user.project_set.all %}
+		{% cycle '<div class="row">' '' %}
+		<div class="col-md-6">
+			<div class="panel panel-project">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a href="{% url 'jobs_manager_app:project_detail' x.id %}" >
+							{{x.name}}
+						</a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					{% if x.website != 0 %}
+						<div style="float: right; border: 1px solid gainsboro; border-radius: 3px; padding: 5px; margin-left: 5px; margin-bottom: 5px;" >
+							<a href="{{ x.website }}" >{{ x.website }}</a>
+						</div>
+					{% endif %}
+					{{x.description|linebreaksbr}}
+				</div>
+			</div>
+		</div>
+		{% if forloop.last and not forloop.counter|divisibleby:2 %}
+			<div class="col-md-6"></div>
+			</div>
+		{% endif %}
+		{% cycle '' '</div>' %}
+	{% endfor %}
+</div>
+{% endif %}
+<!-- END PROJECTS -->
+
+
+
+<!-- ASSIGNMENTS -->
+{% if user.assignment_set.count != 0 %}
+<div class="row">
+	<div class="row">
+		<div class="col-md-6">
+			<h3 style="margin-bottom:15px;">{% trans "Assignments" %} </h3>
+		</div>
+		<div class="col-md-6"></div>
+	</div>
+	
+	{% for x in user.assignment_set.all %}
+		{% cycle '<div class="row">' '' %}
+		<div class="col-md-6">
+			<div class="panel panel-assignment">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a href="{% url 'jobs_manager_app:assignment_detail' x.id %}" >
+							{{x.name}}
+							{% if x.int_state == 5 %}{% trans "(Closed)" %}{% endif %}
+						</a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div style="float: right; border: 1px solid gainsboro; border-radius: 3px; padding: 5px; margin-left: 5px; margin-bottom: 5px;" >
+						{% trans "ETA:" %} {{ x.eta|default_if_none:"N/A" }}<br>
+						{% trans "Price:" %} {{ x.price|default_if_none:"N/A" }} €
+					</div>
+					{{x.requirements|linebreaksbr}}
+				</div>
+			</div>
+		</div>
+		{% if forloop.last and not forloop.counter|divisibleby:2 %}
+			<div class="col-md-6"></div>
+			</div>
+		{% endif %}
+		{% cycle '' '</div>' %}
+	{% endfor %}
+</div>
 {% endif %}
 
-{% if user.assignment_set.count != 0 %}
-	<div class="row">
-		<h3 style="padding-bottom:10px;">Assignments</h3>
-		{% for x in user.assignment_set.all %}
-		<div class="panel panel-assignment">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<a href="{% url 'jobs_manager_app:assignment_detail' x.id %}" >
-						{{x.name}}
-					</a>
-				</h3>
-			</div>
-			<div class="panel-body">{{x.requirements|linebreaksbr}}</div>
-		</div>
-		{% endfor %}
-	</div>
-{% endif %}
+<!-- END ASSIGNMENTS -->
+
+
+
+<!-- TASKS -->
 
 {% if user.task_set.count != 0 %}
+<div class="row">
 	<div class="row">
-		<h3 style="padding-bottom:10px;">Tasks</h3>
-		{% for x in user.task_set.all %}
-		<div class="panel panel-task">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<a href="{% url 'jobs_manager_app:task_detail' x.id %}" >
-						{{x.name}}
-					</a>
-				</h3>
-			</div>
-			<div class="panel-body">{{x.description|linebreaksbr}}</div>
+		<div class="col-md-6">
+			<h3 style="margin-bottom:15px;">{% trans "Tasks" %} </h3>
 		</div>
-		{% endfor %}
+		<div class="col-md-6"></div>
 	</div>
+	
+	{% for x in user.task_set.all %}
+		{% cycle '<div class="row">' '' %}
+		<div class="col-md-6">
+			<div class="panel panel-task">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<a href="{% url 'jobs_manager_app:task_detail' x.id %}" >
+							{{x.name}}
+							{% if x.bool_completed %}{% trans "(Completed)" %}{% endif %}
+						</a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div style="float: right; border: 1px solid gainsboro; border-radius: 3px; padding: 5px; margin-left: 5px; margin-bottom: 5px;" >
+						{% trans "Priority:" %} {{ x.priority }}<br>
+					</div>
+					{{x.description|linebreaksbr}}
+				</div>
+			</div>
+		</div>
+		{% if forloop.last and not forloop.counter|divisibleby:2 %}
+			<div class="col-md-6"></div>
+			</div>
+		{% endif %}
+		{% cycle '' '</div>' %}
+	{% endfor %}
+</div>
 {% endif %}
+
+<!-- END TASKS -->
+
+
 
 {% endblock content %}

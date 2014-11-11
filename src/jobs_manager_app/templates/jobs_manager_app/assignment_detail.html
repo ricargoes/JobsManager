@@ -6,31 +6,37 @@
 
 <div class="row">
 	<div class="col-md-2">
-		<p style="margin-top: 40px">
-			{% trans "Project:" %} <br>
+		<p style="margin-top: 60px">
+			<span class="glyphicon glyphicon-book" style="color: green;"> </span> {% trans "Project:" %} <br>
 			<a href="{% url 'jobs_manager_app:project_detail' assignment.project.id %}" class="link-project"> {{ assignment.project }}</a>
 		</p>
+		<br>
 		<p>
-			{% trans "Developer:" %} <br>
+			<span class="glyphicon glyphicon-pencil" style="color: green;"> </span> {% trans "Developer:" %} <br>
 			<a href="{% url 'jobs_manager_app:user_detail' assignment.dev.id %}" class="link-user"> {{ assignment.dev.username }}</a>
+		</p>
+		<br>
+		<p>
+			<span class="glyphicon glyphicon-calendar" style="color: green;"> </span> {% trans "Created:" %} <br>
+			{{ assignment.created }}
 		</p>
 			
 	</div>
 	
 	<div class="col-md-7">
 		<div class="row">
-			<h3>{{ assignment.name }}</h3>
+			<h3><span style="background-color: green; padding-right: 10px; margin-right: 8px;"> </span> {{ assignment.name }}</h3>
 		</div>
 		<div class="row">
 			{% trans "Requirements:" %}<br>
-			<div style="border: 1px solid gainsboro; border-radius: 6px; padding: 7px; margin-bottom: 4px">
+			<div style="border: 1px solid gainsboro; border-radius: 6px; padding: 7px; margin-bottom: 4px; margin-left: 5px;">
 				{{ assignment.requirements|linebreaksbr }}
 			</div>
 		</div>
 		<div class="row">
-			{% trans "Price:" %} {{ assignment.price|default_if_none:"N/A" }} €
+			<span class="glyphicon glyphicon-euro" style="color: green;"> </span> {% trans "Price:" %} {{ assignment.price|default_if_none:"N/A" }}
 			<div style="float: right">
-				{% trans "ETA:" %} {{ assignment.eta|default_if_none:"N/A" }}
+				<span class="glyphicon glyphicon-time" style="color: green;"> </span> {% trans "ETA:" %} {{ assignment.eta|default_if_none:"N/A" }}
 			</div>
 		</div>
 		
@@ -47,6 +53,15 @@
 				<p>{% trans "State:" %} {{ assignment.int_state }} </p>
 				{% if assignment.int_state != 5 %}
 					<p>{% trans "Waiting for:" %} {{ assignment.int_state }} </p>
+				{% endif %}{% if assignment.deal_comment %}
+					{% if assignment.int_state == -1 %}
+						{% trans "Rejection comment:" %}
+					{% else %}
+						{% trans "Confirmation comment:" %}
+					{% endif %}
+					<div style="border: 1px solid gainsboro; border-radius: 3px; padding: 2px; margin-bottom:10px">
+						{{ assignment.deal_comment|linebreaksbr }}
+					</div>
 				{% endif %}{% if assignment.delivery_date %}
 					<p>{% trans "Delivery date:" %} {{ assignment.delivery_date|default_if_none:"N/A" }} </p>
 				{% endif %}{% if assignment.payment_date %}
@@ -84,12 +99,14 @@
 </div>
 
 <br>
+<br>
 <hr>
+<br>
 <br>
 
 <div class="row">
 	<div class="col-md-6">
-		<h3 style="margin-bottom:15px;">Tasks <a href="{% url 'jobs_manager_app:task_create' assignment.id %}" class="btn btn-md btn-task" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a></h3>
+		<h3 style="margin-bottom:15px;">{% trans "Tasks" %} <a href="{% url 'jobs_manager_app:task_create' assignment.id %}" class="btn btn-md btn-task" style="float:right"> <span class="glyphicon glyphicon-plus create"></span></a></h3>
 		
 		{% for x in assignment.task_set.all %}
 		<div class="panel panel-task">
@@ -97,7 +114,13 @@
 				<h3 class="panel-title">
 					<a href="{% url 'jobs_manager_app:task_detail' x.id %}" >
 						{{x.name}}
+						{% if x.bool_completed %}{% trans "(Completed)" %}{% endif %}
 					</a>
+					{% if x.colaborator %}
+						<div style="float: right">
+							<a href="{% url 'jobs_manager_app:user_detail' x.colaborator.id %}" >{{ x.colaborator }}</a>
+						</div>
+					{% endif %}
 				</h3>
 			</div>
 			<div class="panel-body">{{x.description|linebreaksbr}}</div>
