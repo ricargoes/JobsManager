@@ -103,8 +103,8 @@ def notif_negotiation(assignment):
         body = body + _(
             '\n'
             'Offer:\n'
-            'Price: %(price)s euros'
-            'ETA: %(eta)s'
+            'Price: %(price)s euros.\n'
+            'ETA: %(eta)s.'
             ) % {'price': assignment.price,
                  'eta': assignment.eta}
     elif assignment.int_state in [-2, 3, 5]:

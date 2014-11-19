@@ -67,7 +67,7 @@
 				{% endif %}{% if assignment.payment_date %}
 					<p>{% trans "Payment date:" %} {{ assignment.payment_date|default_if_none:"N/A" }} </p>
 				{% endif %}{% if assignment.close_date %}
-					<p>{% trans "Close date:" %} {{ assignment.close_date|default_if_none:"N/A" }} </p>
+					<p><span class="glyphicon glyphicon-lock" style="color: green;"> </span> {% trans "Close date:" %} {{ assignment.close_date|default_if_none:"N/A" }} </p>
 				{% endif %}
 			</div>
 		</div>
@@ -174,6 +174,7 @@
 </div>
 
 
+<!-- MODALS -->
 {% block modals %}
 
 
@@ -183,8 +184,19 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_estimate' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					{{ estimation_form.as_p }}
-				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+					<div class="input-group">
+						<span class="input-group-addon">€</span>
+						<input type="text" name="{{ estimation_form.price.name }}" class="form-control" placeholder="{% trans "Name your price in €" %}" id="{{ estimation_form.price.id_for_label }}">
+					</div>
+					<br>
+					<div class="input-group" style="text-align: right;">
+						<label class="control-label" for="{{ estimation_form.eta.id_for_label }}" style="margin-right: 1em;">{% trans "ETA:" %} </label>
+						<input type="date" name="{{ estimation_form.eta.name }}" id="{{ estimation_form.eta.id_for_label }}">
+						<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+					</div>
+					<br>
+					
+					<div style="text-align: right;"><input type="submit" value="Send" class="btn" style="background-color: green; color: white;"></div>
 				</form>
 			</div>
 		</div>
@@ -197,9 +209,14 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_confirm_estimate' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					{{ deal_form }}
-					<button class="btn btn-md btn-danger" style="float: right" type="submit" name="decision" value="rejected" >Reject</button>
-				    <button class="btn btn-md btn-success" style="float: right" type="submit" name="decision" value="confirmed" >Confirm</button>
+					<div class="input-group">
+						<label class="sr-only" for="{{ deal_form.deal_comment.id_for_label }}" style="margin-right: 1em;">{% trans "Deal comment:" %} </label>
+						<textarea name="{{ deal_form.deal_comment.name }}" rows="4" cols="70" id="{{ deal_form.deal_comment.id_for_label }}" placeholder="{% trans "Send a comment with your decision." %}"></textarea>
+					</div>
+					<div style="text-align: right;">
+						<button class="btn" style="background-color: darkred; color: white;" type="submit" name="decision" value="rejected" >Reject</button>
+					    <button class="btn" style="background-color: green; color: white;" type="submit" name="decision" value="confirmed" >Confirm</button>
+				    </div>
 				</form>
 			</div>
 		</div>
@@ -212,8 +229,10 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_state_forward' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					Are you sure you have completed the assignment?
-				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+					{% trans "Are you sure you want to mark the assignment as completed?" %}
+					<div style="text-align: right">
+				    	<button class="btn" style="background-color: green; color: white;" type="submit">{% trans "Mark it" %}</button>
+				    </div>
 				</form>
 			</div>
 		</div>
@@ -226,8 +245,10 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_state_forward' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					Have you paid the assignment?
-				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+					{% trans "Have you paid the assignment?" %}
+				    <div style="text-align: right">
+				    	<button class="btn" style="background-color: green; color: white;" type="submit">{% trans "Yes, it's paid" %}</button>
+				    </div>
 				</form>
 			</div>
 		</div>
@@ -240,8 +261,10 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_state_forward' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					Are you sure you want to close the assignment? No going back!
-				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+					{% trans "Are you sure you want to close the assignment?" %}
+				    <div style="text-align: right">
+				    	<button class="btn" style="background-color: green; color: white;" type="submit">{% trans "Close assignment" %}</button>
+				    </div>
 				</form>
 			</div>
 		</div>
@@ -254,8 +277,17 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_toggle_hold' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					Are you sure you want {% if assignment.int_state == -2 %}resume{% else %}hold{% endif %} the assignment?
-				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+					{% if assignment.int_state == -2 %}
+						{% trans "Are you sure you want to resume the assignment?" %}
+					    <div style="text-align: right">
+					    	<button class="btn" style="background-color: green; color: white;" type="submit">{% trans "Resume" %}</button>
+					    </div>
+				    {% else %}
+				    	{% trans "Are you sure you want to hold the assignment?" %}
+					    <div style="text-align: right">
+					    	<button class="btn" style="background-color: darkred; color: white;" type="submit">{% trans "Hold assignment" %}</button>
+					    </div>
+				    {% endif %}
 				</form>
 			</div>
 		</div>
@@ -268,8 +300,10 @@
 			<div class="modal-body">
 				<form action="{% url 'jobs_manager_app:assignment_hold_payment' assignment.id %}" method="post" role="form">
 					{% csrf_token %}
-					Are you sure you want to hold the payment?
-				    <button class="btn btn-md btn-warning" style="float: right" type="submit">Send</button>
+					{% trans "Are you sure you want to hold the payment?" %}
+				    <div style="text-align: right">
+				    	<button class="btn" style="background-color: darkred; color: white;" type="submit">{% trans "Hold payment" %}</button>
+				    </div>
 				</form>
 			</div>
 		</div>
