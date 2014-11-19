@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from django.contrib import messages
-from django.conf.global_settings import LOGIN_URL, MEDIA_ROOT
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))

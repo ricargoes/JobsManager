@@ -258,9 +258,3 @@ def hold_payment(request, assignment_id):
     return HttpResponseRedirect(
         reverse('jobs_manager_app:assignment_index')
     )
-
-# from django.core.mail import send_mail
-#     send_mail(text, 'The payment for the assignment '
-#               + assignment.name + ' is in hold.',
-#               'localhost', [assignment.dev.email],
-#               fail_silently=False)

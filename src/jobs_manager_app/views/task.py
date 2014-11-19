@@ -104,7 +104,8 @@ def close_task(request, task_id):
     if request.method != 'POST':
         messages.error(request, _('POST method expected'))
         return HttpResponseRedirect(
-            reverse_lazy('jobs_manager_app:task_index')
+            reverse_lazy('jobs_manager_app:task_detail',
+                         kwargs={'task_id': task_id})
         )
 
     task = get_object_or_404(Task, pk=task_id)
@@ -122,5 +123,6 @@ def close_task(request, task_id):
         notif = tools.notif_closed_task(task, recipient)
         notif.save()
 
-    messages.success(request, _('Task deleted'))
-    return HttpResponseRedirect(reverse_lazy('jobs_manager_app:task_index'))
+    messages.success(request, _('Task closed'))
+    return HttpResponseRedirect(reverse_lazy('jobs_manager_app:task_detail',
+                                             kwargs={'task_id': task_id}))

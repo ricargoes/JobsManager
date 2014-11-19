@@ -116,13 +116,13 @@ def notif_negotiation(assignment):
 
 
 def notif_closed_task(task, recipient):
-    title = (_('New task: %(task_name)s.')
+    title = (_('Task closed: %(task_name)s.')
              % {'task_name': task.name})
     body = _('When: %(date)s.\n\n'
              'Where:\n'
              'Project: %(project)s.\n'
              'Assignment: %(assign)s (Dev: %(dev)s).\n\n'
-             'Closed task:[1m\n'
+             'Closed task:\n'
              'Name: %(task)s. Priority: %(priority)d.\n'
              ) % {'date': date.today(), 'project': task.assignment.project,
                   'assign': task.assignment, 'dev': task.assignment.dev,

@@ -45,6 +45,8 @@ urlpatterns = patterns(
         views.task.update, name='task_create'),
     url(r'^task/(?P<task_id>\d+)/delete/$',
         views.task.delete, name='task_delete'),
+    url(r'^task/(?P<task_id>\d+)/close/$',
+        views.task.close_task, name='task_close'),
 
     url(r'^user/$', views.user.index, name='user_index'),
     url(r'^user/(?P<user_id>\d+)/$',

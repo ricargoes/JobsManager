@@ -45,12 +45,21 @@
 		<div class="row">
 		{% trans "Priority:" %} {{ task.priority }}
 			<div style="float: right">
-				{% if task.bool_completed %}<span class="glyphicon glyphicon-lock" style="color: goldenrod;"></span> <strong>{% trans "Completed" %}</strong>{% endif %}
+				{% if task.bool_completed %}
+					<span class="glyphicon glyphicon-lock" style="color: goldenrod;"></span> <strong>{% trans "Completed" %}</strong>
+				{% endif %}
 			</div>
 		</div>
 		
 	</div>
-	<div class="col-md-2"></div>
+	<div class="col-md-2">
+		{% if not task.bool_completed %}
+			<form action="{% url 'jobs_manager_app:task_close' task.id %}" method="post" role="form">
+				{% csrf_token %}
+				<button type="submit" class="btn" style="background-color: goldenrod; color: white; margin-top: 5.4em;"><span class="glyphicon glyphicon-lock"></span> {% trans "Close task" %} </button>
+			</form>
+		{% endif %}
+	</div>
 </div>
 
 <br>
