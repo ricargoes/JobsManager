@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from jobs_manager_app.models import Project
 from jobs_manager_app.forms import ProjectForm
 from django.contrib.auth.decorators import login_required
@@ -14,7 +15,19 @@ context['tag'] = 'project'
 @login_required
 def index(request):
     project_list = Project.objects.filter(customer=request.user)
-    context['project_list'] = project_list
+    project_paginator = Paginator(project_list, 10)
+
+    page = request.GET.get('page')
+    try:
+        project_list_p = project_paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        project_list_p = project_paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        project_list_p = project_paginator.page(project_paginator.num_pages)
+
+    context['project_list'] = project_list_p
     return render(request, 'jobs_manager_app/project_list.html', context)
 
 

@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils.translation import ugettext as _
@@ -19,7 +20,20 @@ def index(request):
     task_list = Task.objects.filter(
         Q(colaborator=request.user) | Q(assignment__dev=request.user)
     )
-    context['task_list'] = task_list
+
+    task_paginator = Paginator(task_list, 10)
+
+    page = request.GET.get('page')
+    try:
+        task_list_p = task_paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        task_list_p = task_paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        task_list_p = task_paginator.page(task_paginator.num_pages)
+
+    context['task_list'] = task_list_p
     return render(request, 'jobs_manager_app/task_list.html', context)
 
 

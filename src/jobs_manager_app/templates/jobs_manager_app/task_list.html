@@ -1,16 +1,41 @@
-{% extends "jobs_manager_app/base.html" %} {% block content %}
+{% extends "jobs_manager_app/base.html" %}
+{% load i18n %}
 
+{% block content %}
+
+{% if task_list..paginator.num_pages > 1 %}
+<div class="pagination" style="float: right; margin-top: 0px;">
+	<span class="step-links">
+		{% if task_list.has_previous %}
+			<a href="?page={{ task_list.previous_page_number }}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+		{% endif %}
+
+		|
+		{% for number in task_list.paginator.page_range %}
+			{% if task_list.number == number %}
+				{{ number }} |
+			{% else %}
+				<a href="?page={{ number }}">{{ number }} |</a>
+			{% endif %}
+		{% endfor %}
+
+		{% if task_list.has_next %}
+			<a href="?page={{ task_list.next_page_number }}"><span class="glyphicon glyphicon-chevron-right"></span></a>
+		{% endif %}
+	</span>
+</div>
+{% endif %}
 
 <table class="table table-hover table-condensed">
 	<tr>
-		<th>Name</th>
-		<th>Assignment</th>
-		<th>Dev</th>
-		<th>Colaborator</th>
-		<th>Priority</th>
-		<th>State <a>(info)</a></th>
-		<th>Action</th>
-		<th>Created</th>
+		<th>{% trans "Name" %}</th>
+		<th>{% trans "Assignment" %}</th>
+		<th>{% trans "Dev" %}</th>
+		<th>{% trans "Colaborator" %}</th>
+		<th>{% trans "Priority" %}</th>
+		<th>{% trans "State" %} <a>({% trans "info" %})</a></th>
+		<th>{% trans "Action" %}</th>
+		<th>{% trans "Created" %}</th>
 	</tr>
 	{% for task in task_list %}
 	<tr>
@@ -18,10 +43,10 @@
 			<a href="{% url 'jobs_manager_app:task_detail' task.id %}"> {{ task.name }}</a>
 		</td>
 		<td>
-			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}">{{ task.assignment.name }}</a>
+			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}" class="link-assignment">{{ task.assignment.name }}</a>
 		</td>
-		<td>{{ task.assignment.dev }}</td>
-		<td>{{ task.colaborator }}</td>
+		<td><a href="{% url 'jobs_manager_app:user_detail' task.assignment.dev.id %}" class="link-user">{{ task.assignment.dev }}</a></td>
+		<td><a href="{% url 'jobs_manager_app:user_detail' task.colaborator.id %}" class="link-user">{{ task.colaborator }}</a></td>
 		<td>{{ task.priority }}</td>
 		<td>{{ task.bool_completed }}</td>
 		<td>
