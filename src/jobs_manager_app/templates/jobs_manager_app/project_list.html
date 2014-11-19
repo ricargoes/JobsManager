@@ -3,27 +3,30 @@
 
 {% block content %}
 
-{% if task_list..paginator.num_pages > 1 %}
-<div class="pagination" style="float: right; margin-top: 0px;">
-    <span class="step-links">
+{% if project_list.paginator.num_pages > 1 %}
+<nav>
+  <ul class="pagination" style="float: right; margin-top: 0px;">
         {% if project_list.has_previous %}
-            <a href="?page={{ project_list.previous_page_number }}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+			<li><a href="?page={{ project_list.previous_page_number }}" style="color: darkblue">&laquo;</a></li>
+		{% else %}
+			<li class="disabled"><span>&laquo;</span></li>
         {% endif %}
 		
-		|
 		{% for number in project_list.paginator.page_range %}
 			{% if project_list.number == number %}
-				{{ number }} |
+				<li class="active"><a href="#" style="background-color: darkblue; border-color: lightblue">{{ number }}</a></li>
 			{% else %}
-				<a href="?page={{ number }}">{{ number }} |</a>
+				<li><a href="?page={{ number }}" style="color: darkblue;">{{ number }}</a></li>
 			{% endif %}
 		{% endfor %}
 		
         {% if project_list.has_next %}
-            <a href="?page={{ project_list.next_page_number }}"><span class="glyphicon glyphicon-chevron-right"></span></a>
+            <li><a href="?page={{ project_list.next_page_number }}" style="color: darkblue;"> &raquo;</a></li>
+		{% else %}
+			<li class="disabled"><span>&raquo;</span></li>
         {% endif %}
-    </span>
-</div>
+    </ul>
+</nav>
 {% endif %}
 
 <table class="table table-hover table-condensed">

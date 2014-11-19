@@ -21,7 +21,7 @@ def index(request):
         Q(colaborator=request.user) | Q(assignment__dev=request.user)
     )
 
-    task_paginator = Paginator(task_list, 10)
+    task_paginator = Paginator(task_list, 2)
 
     page = request.GET.get('page')
     try:

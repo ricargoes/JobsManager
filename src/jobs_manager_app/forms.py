@@ -29,8 +29,7 @@ class DealForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['colaborator', 'name', 'description', 'priority',
-                  'bool_completed']
+        fields = ['colaborator', 'name', 'description', 'priority']
 
 
 class CommentForm(forms.ModelForm):

@@ -3,27 +3,30 @@
 
 {% block content %}
 
-{% if task_list..paginator.num_pages > 1 %}
-<div class="pagination" style="float: right; margin-top: 0px;">
-	<span class="step-links">
-		{% if task_list.has_previous %}
-			<a href="?page={{ task_list.previous_page_number }}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-		{% endif %}
-
-		|
+{% if task_list.paginator.num_pages > 1 %}
+<nav>
+  <ul class="pagination" style="float: right; margin-top: 0px;">
+        {% if task_list.has_previous %}
+			<li><a href="?page={{ task_list.previous_page_number }}" style="color: goldenrod">&laquo;</a></li>
+		{% else %}
+			<li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+		
 		{% for number in task_list.paginator.page_range %}
 			{% if task_list.number == number %}
-				{{ number }} |
+				<li class="active"><a href="#" style="background-color: goldenrod; border-color: gold">{{ number }}</a></li>
 			{% else %}
-				<a href="?page={{ number }}">{{ number }} |</a>
+				<li><a href="?page={{ number }}" style="color: goldenrod;">{{ number }}</a></li>
 			{% endif %}
 		{% endfor %}
-
-		{% if task_list.has_next %}
-			<a href="?page={{ task_list.next_page_number }}"><span class="glyphicon glyphicon-chevron-right"></span></a>
-		{% endif %}
-	</span>
-</div>
+		
+        {% if task_list.has_next %}
+            <li><a href="?page={{ task_list.next_page_number }}" style="color: goldenrod;"> &raquo;</a></li>
+		{% else %}
+			<li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+</nav>
 {% endif %}
 
 <table class="table table-hover table-condensed">
@@ -43,7 +46,7 @@
 			<a href="{% url 'jobs_manager_app:task_detail' task.id %}"> {{ task.name }}</a>
 		</td>
 		<td>
-			<a href="{% url 'jobs_manager_app:project_detail' task.assignment.id %}" class="link-assignment">{{ task.assignment.name }}</a>
+			<a href="{% url 'jobs_manager_app:assignment_detail' task.assignment.id %}" class="link-assignment">{{ task.assignment.name }}</a>
 		</td>
 		<td><a href="{% url 'jobs_manager_app:user_detail' task.assignment.dev.id %}" class="link-user">{{ task.assignment.dev }}</a></td>
 		<td><a href="{% url 'jobs_manager_app:user_detail' task.colaborator.id %}" class="link-user">{{ task.colaborator }}</a></td>

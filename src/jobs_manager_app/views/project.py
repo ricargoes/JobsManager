@@ -15,7 +15,7 @@ context['tag'] = 'project'
 @login_required
 def index(request):
     project_list = Project.objects.filter(customer=request.user)
-    project_paginator = Paginator(project_list, 10)
+    project_paginator = Paginator(project_list, 2)
 
     page = request.GET.get('page')
     try:
