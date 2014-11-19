@@ -1,26 +1,35 @@
 {% extends "jobs_manager_app/base.html" %}
+{% load i18n %}
 
 {% block content %}
 
 {% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
+	<div class="alert alert-danger alert-dismissible">
+		<button type="button" class="close" data-dismiss="alert">
+			<span aria-hidden="true">&times;</span>
+			<span class="sr-only">Close</span>
+		</button>
+		<span class="glyphicon glyphicon-warning-sign"> </span>
+		{% trans "Your username and password didn't match. Please try again." %}
+	</div>
 {% endif %}
 
-<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+<div style="text-align: center; margin: 7em;">
+<form method="post" action="{% url 'django.contrib.auth.views.login' %}" class="form-inline" role="form">
 {% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
-
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
+	<div class="input-group" style="margin-right:0.5em">
+		<label class="sr-only" for="{{ form.username.id_for_label }}">{% trans "Username" %}</label>
+		<div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+		<input type="text" name="{{ form.username.name }}" class="form-control" id="{{ form.username.id_for_label }}" placeholder="{% trans "Username" %}">
+	</div>
+	<div class="input-group" style="margin-right:0.5em">
+		<label class="sr-only" for="{{ form.password.id_for_label }}">{% trans "Password" %}</label>
+		<div class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></div>
+		<input type="password" name="{{ form.password.name }}" class="form-control" id="{{ form.password.id_for_label }}" placeholder="{% trans "Password" %}">
+	</div>
+	<button type="submit" class="btn" style="color: white;">{% trans "Sign in" %}</button>
+	<input type="hidden" name="next" value="{{ next }}" />
 </form>
+</div>
 
 {% endblock %}
