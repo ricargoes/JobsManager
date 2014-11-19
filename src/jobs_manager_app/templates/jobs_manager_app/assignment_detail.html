@@ -133,30 +133,41 @@
 		<h3 style="text-align:right; padding-right:80px; padding-bottom:10px;">Comments</h3>
 		{% for x in assignment.comment_set.all %}
 			<div class="row">
-				<div class="col-md-10">
+				<div class="col-md-9">
 					<div class="panel panel-{{ tag }}">
 						<div class="panel-body">{{x.comment|linebreaksbr}}</div>
 					</div>
 				</div>
-				<div class="col-md-2">
-					{{ x.user }}
-				</div>
-				{% if x.attachment %}
+				<div class="col-md-3">
 					<div class="row">
-						<a href="{{ x.attachment.url }}">tutu</a>
+						{% if x.attachment %}
+								<a href="{{ MEDIA_URL }}{{ x.attachment }}" title="{% trans "Attachment" %}"> <span class="glyphicon glyphicon-paperclip" style="color: green;"> </span> </a>
+						{% endif %}
+						{{ x.user }}
 					</div>
-				{% endif %}
+					<div class="row" style="margin-top: 0.3em">
+						{{ x.created }}
+					</div>
+				</div>
 			</div>
 		{% endfor %}
+		
+		<hr>
+		<br>
+		
 		<form action="{% url 'jobs_manager_app:comment_from_assignment' assignment.id %}" method="post" enctype="multipart/form-data">
 		{% csrf_token %}
-		    {% for field in comment_form %}
-		        <div class="fieldWrapper">
-		            {{ field.errors }}
-		            {{ field.label_tag }}  {{ field }}
-		        </div>
-		    {% endfor %}
-		    <p><input type="submit" value="Send message" /></p>
+			<div class="input-group">
+				<span class="input-group-addon">{% trans "Comment" %}</span>
+				<textarea rows="3" name="{{ comment_form.comment.name }}" class="form-control" placeholder="{% trans "Place your comment" %}" id="{{ form.comment.id_for_label }}">{{ comment_form.comment.value|default_if_none:"" }}</textarea>
+			</div>
+			<br>
+			<div class="input-group" style="margin-left: 100px;">
+				<input type="file" name="{{ comment_form.attachment.name }}" value="{{ comment_form.attachment.value }}" class="form-control" id="{{ form.attachment.id_for_label }}">
+				<span class="input-group-addon">{% trans "Attachment" %}</span>
+			</div>
+			<br>
+			<input type="submit" value="{% trans "Post" %}" class="btn" style="color: white; float: right;">
 		</form>
 		
 	</div>

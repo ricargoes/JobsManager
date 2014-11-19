@@ -155,13 +155,13 @@ def notif_comment_task(comment, recipient):
 
 
 def notif_comment_assign(comment, recipient):
-    title = (_('New comment in task: %(task_name)s.')
-             % {'task_name': comment.assignment.name})
+    title = (_('New comment in assignment: %(assign_name)s.')
+             % {'assign_name': comment.assignment.name})
     body = _('When: %(date)s.\n\n'
              'Where:\n'
              'Project: %(project)s.\n'
              'Assignment: %(assign)s (Dev: %(dev)s).\n\n'
-             'Comment:%(comment)s'
+             'Comment: %(comment)s'
              ) % {'date': date.today(),
                   'project': comment.assignment.project,
                   'assign': comment.assignment,

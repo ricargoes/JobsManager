@@ -66,35 +66,44 @@
 {% for x in task.comment_set.all %}
 	<div class="row">
 		<div class="col-md-10">
-			<div class="panel panel-primary">
+			<div class="panel panel-{{tag}}">
 				<div class="panel-body">{{x.comment|linebreaksbr}}</div>
 			</div>
 		</div>
 		<div class="col-md-2">
 			<div class="row">
+				{% if x.attachment %}
+						<a href="{{ MEDIA_URL }}{{ x.attachment }}" title="{% trans "Attachment" %}"> <span class="glyphicon glyphicon-paperclip" style="color: goldenrod;"> </span> </a>
+				{% endif %}
 				{{ x.user }}
 			</div>
-			{% if x.attachment %}
-				<div class="row">
-					<a href="{{ MEDIA_URL }}{{ x.attachment }}">tutu</a>
-				</div>
-			{% endif %}
+			<div class="row" style="margin-top: 0.3em">
+				{{ x.created }}
+			</div>
 		</div>
 	</div>
 {% endfor %}
 {% endblock content %}
 
+
+
 {% block form %}
+<hr>
+<br>
 
 <form action="{% url 'jobs_manager_app:comment_from_task' task.id %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
-    {% for field in comment_form %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }}  {{ field }}
-        </div>
-    {% endfor %}
-    <p><input type="submit" value="Send message" /></p>
+	<div class="input-group"">
+		<span class="input-group-addon">{% trans "Comment" %}</span>
+		<textarea rows="3" name="{{ comment_form.comment.name }}" class="form-control" placeholder="{% trans "Place your comment" %}" id="{{ form.comment.id_for_label }}">{{ comment_form.comment.value|default_if_none:"" }}</textarea>
+	</div>
+	<br>
+	<div class="input-group" style="margin-left: 50rem;">
+		<input type="file" name="{{ comment_form.attachment.name }}" value="{{ comment_form.attachment.value }}" class="form-control" id="{{ form.attachment.id_for_label }}">
+		<span class="input-group-addon">{% trans "Attachment" %}</span>
+	</div>
+	<br>
+	<input type="submit" value="{% trans "Post" %}" class="btn" style="color: white; float: right;">
 </form>
 
 {% endblock form %}

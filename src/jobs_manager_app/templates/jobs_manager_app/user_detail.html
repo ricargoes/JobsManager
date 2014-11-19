@@ -14,7 +14,7 @@
 			<a href="{% url 'jobs_manager_app:assignment_index' %}" class="link-assignment"> {{ user.assignment_set.count }}</a>
 		</p>
 		<p>
-			<span class="glyphicon glyphicon-paperclip" style="color: grey;"> </span> {% trans "Task:" %}
+			<span class="glyphicon glyphicon-list-alt" style="color: grey;"> </span> {% trans "Task:" %}
 			<a href="{% url 'jobs_manager_app:assignment_index' %}" class="link-task"> {{ user.task_set.count }}</a>
 		</p>
 		<br>
